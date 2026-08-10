@@ -26,7 +26,7 @@
   const difficultyKey = "digitandoSpeedDifficulty";
 
   const DIFFICULTIES = {
-    easy:    { label: "Fácil",   speed: 0.72, spawn: 1.35, minSpawn: 1.10, levelStep: 10, wordBias: -2 },
+    easy:    { label: "Fácil",   speed: 0.60, spawn: 1.65, minSpawn: 1.45, levelStep: 15, wordBias: -4 },
     medium:  { label: "Médio",   speed: 1.00, spawn: 1.00, minSpawn: 0.72, levelStep: 7,  wordBias: 0 },
     hard:    { label: "Difícil", speed: 1.22, spawn: 0.82, minSpawn: 0.58, levelStep: 6,  wordBias: 2 },
     extreme: { label: "Extremo", speed: 1.48, spawn: 0.64, minSpawn: 0.43, levelStep: 5,  wordBias: 5 }
