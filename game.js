@@ -340,14 +340,8 @@
   }
 
   function destroyEnemy(enemy) {
-    if (enemy.kind === "bonus") {
-      destroyBonus(enemy);
-      return;
-    }
-    if (enemy.kind === "boss") {
-      destroyBoss(enemy);
-      return;
-    }
+    if (enemy.kind === "bonus") return destroyBonus(enemy);
+    if (enemy.kind === "boss") return destroyBoss(enemy);
 
     const index = enemies.indexOf(enemy);
     if (index >= 0) enemies.splice(index, 1);
@@ -445,16 +439,15 @@
     sfx("type");
   }
 
-  function skipPhraseSpaces(enemy) {
-    if (enemy.kind !== "boss") return;
-    const letters = [...enemy.word];
-    while (enemy.typed < letters.length && letters[enemy.typed] === " ") enemy.typed += 1;
-  }
-
   function processKey(rawKey) {
     if (state.mode !== "playing") return;
     const key = rawKey.toLocaleLowerCase("pt-BR");
-    if (!key || [...key].length !== 1 || key === " ") return;
+    if (!key || [...key].length !== 1) return;
+
+    // Espaço é parte real das frases dos chefões. Fora de um chefão já selecionado,
+    // a barra de espaço é ignorada para não gerar erros acidentais.
+    if (key === " " && (!state.target || state.target.kind !== "boss")) return;
+
     state.totalChars += 1;
 
     if (!state.target || !enemies.includes(state.target)) {
@@ -469,12 +462,11 @@
 
     const target = state.target;
     if (target) {
-      skipPhraseSpaces(target);
       const letters = [...target.word];
       const expected = letters[target.typed]?.toLocaleLowerCase("pt-BR");
+
       if (key === expected) {
         target.typed += 1;
-        skipPhraseSpaces(target);
         state.correctChars += 1;
         state.streak += 1;
         state.bestStreak = Math.max(state.bestStreak, state.streak);
@@ -486,17 +478,14 @@
         return;
       }
 
+      // Ao errar, a palavra/frase volta ao início e o alvo é liberado.
+      // Assim o jogador pode deixá-la passar e escolher qualquer outra palavra.
       state.streak = 0;
       target.typed = 0;
-      const firstLetter = letters[0]?.toLocaleLowerCase("pt-BR");
-      if (key === firstLetter) {
-        target.typed = 1;
-        skipPhraseSpaces(target);
-        state.correctChars += 1;
-        fireLaser(target);
-      }
+      state.target = null;
+      typingInput.value = "";
       state.shake = Math.max(state.shake, 2.5);
-      showToast(target.kind === "boss" ? "ERRO • REDIGITE A FRASE" : "ERRO • REDIGITE A PALAVRA");
+      showToast(target.kind === "boss" ? "ERRO • FRASE LIBERADA" : "ERRO • ALVO LIBERADO");
       sfx("error");
       updateHud();
       return;
@@ -915,7 +904,7 @@
       else if (name === "level") { tone(420, 0.1, 0.028, "triangle", 160); setTimeout(() => tone(620, 0.15, 0.025, "triangle", 220), 90); }
       else if (name === "start") { tone(330, 0.12, 0.02, "sine", 180); setTimeout(() => tone(620, 0.18, 0.02, "sine", 280), 100); }
       else if (name === "bonusAppear") { tone(520, 0.12, 0.025, "triangle", 220); setTimeout(() => tone(780, 0.16, 0.022, "sine", 180), 100); }
-      else if (name === "bonus") { tone(440, 0.14, 0.03, "triangle", 260); setTimeout(() => tone(720, 0.18, 0.028, "triangle", 260), 90); setTimeout(() => tone(980, 0.24, 0.024, "sine", 260), 190); }
+      else if (name === "bonus") { tone(440, 0.14, 0.03, "triangle", 260); setTimeout(() => tone(720, 0.18, 0.028, "triangle", 260), 90); setTimeout(() => tone(980, 0.24, 0.024, "sine", 240), 190); }
       else if (name === "bonusMiss") tone(220, 0.16, 0.018, "triangle", -70);
       else if (name === "bossAppear") { tone(130, 0.34, 0.042, "sawtooth", -35); setTimeout(() => tone(195, 0.3, 0.032, "triangle", 95), 230); }
       else if (name === "boss") { tone(180, 0.18, 0.04, "sawtooth", 220); setTimeout(() => tone(480, 0.24, 0.032, "triangle", 300), 120); setTimeout(() => tone(820, 0.35, 0.026, "sine", 240), 280); }
@@ -929,12 +918,12 @@
     typingInput.value = "";
     if (state.mode !== "playing") return;
     for (const char of [...value]) {
-      if (char !== " " && char !== "\n" && char !== "\r") processKey(char);
+      if (char !== "\n" && char !== "\r") processKey(char);
     }
   });
 
   window.addEventListener("keydown", (event) => {
-    if (event.code === "Space") {
+    if (event.key === "Tab") {
       event.preventDefault();
       togglePause();
       return;
