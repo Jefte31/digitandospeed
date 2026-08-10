@@ -20,6 +20,8 @@
   const TAU = Math.PI * 2;
   const MAX_LIVES = 3;
   const BONUS_EVERY_KILLS = 10;
+  const BOSS_EVERY_LEVELS = 5;
+  const POWER_DURATION = 10;
   const bestKey = "digitandoSpeedBestScore";
   const difficultyKey = "digitandoSpeedDifficulty";
 
@@ -28,6 +30,14 @@
     medium:  { label: "Médio",   speed: 1.00, spawn: 1.00, minSpawn: 0.72, levelStep: 7,  wordBias: 0 },
     hard:    { label: "Difícil", speed: 1.22, spawn: 0.82, minSpawn: 0.58, levelStep: 6,  wordBias: 2 },
     extreme: { label: "Extremo", speed: 1.48, spawn: 0.64, minSpawn: 0.43, levelStep: 5,  wordBias: 5 }
+  };
+
+  const BONUS_TYPES = ["clear", "combo", "slow", "shield"];
+  const BONUS_LABELS = {
+    clear: "LIMPEZA TOTAL",
+    combo: "COMBO ×2",
+    slow: "CÂMERA LENTA",
+    shield: "ESCUDO"
   };
 
   let selectedDifficulty = localStorage.getItem(difficultyKey);
@@ -41,7 +51,8 @@
     mode: "menu", score: 0, level: 1, lives: MAX_LIVES, kills: 0,
     correctChars: 0, totalChars: 0, streak: 0, bestStreak: 0,
     elapsed: 0, spawnClock: 0, target: null, shake: 0, flash: 0, lastLevel: 1,
-    difficulty: selectedDifficulty, nextBonusAt: BONUS_EVERY_KILLS
+    difficulty: selectedDifficulty, nextBonusAt: BONUS_EVERY_KILLS, nextBossLevel: BOSS_EVERY_LEVELS,
+    combo2Until: 0, slowUntil: 0
   };
 
   const typingInput = document.createElement("input");
@@ -60,6 +71,8 @@
   const formatNumber = (n) => Math.round(n).toLocaleString("pt-BR");
   const difficulty = () => DIFFICULTIES[state.difficulty || selectedDifficulty] || DIFFICULTIES.medium;
   const makeId = () => (globalThis.crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
+  const isCombo2 = () => state.elapsed < state.combo2Until;
+  const isSlow = () => state.elapsed < state.slowUntil;
   ui.bestScore.textContent = formatNumber(getBest());
 
   function focusTypingInput() {
@@ -109,10 +122,12 @@
       mode: "playing", score: 0, level: 1, lives: MAX_LIVES, kills: 0,
       correctChars: 0, totalChars: 0, streak: 0, bestStreak: 0,
       elapsed: 0, spawnClock: 0.4, target: null, shake: 0, flash: 0, lastLevel: 1,
-      difficulty: selectedDifficulty, nextBonusAt: BONUS_EVERY_KILLS
+      difficulty: selectedDifficulty, nextBonusAt: BONUS_EVERY_KILLS, nextBossLevel: BOSS_EVERY_LEVELS,
+      combo2Until: 0, slowUntil: 0
     });
     enemies = []; particles = []; lasers = []; shockwaves = [];
-    hideAllOverlays(); updateHud();
+    hideAllOverlays();
+    updateHud();
     showToast(`MISSÃO • ${difficulty().label.toUpperCase()}`);
     sfx("start");
     setTimeout(focusTypingInput, 0);
@@ -158,9 +173,18 @@
     sfx("gameover");
   }
 
-  function getWpm() { return state.elapsed <= 1 ? 0 : Math.max(0, Math.round((state.correctChars / 5) / (state.elapsed / 60))); }
-  function getAccuracy() { return state.totalChars ? Math.round((state.correctChars / state.totalChars) * 100) : 100; }
-  function getMultiplier() { return Math.min(8, 1 + Math.floor(state.streak / 15)); }
+  function getWpm() {
+    return state.elapsed <= 1 ? 0 : Math.max(0, Math.round((state.correctChars / 5) / (state.elapsed / 60)));
+  }
+
+  function getAccuracy() {
+    return state.totalChars ? Math.round((state.correctChars / state.totalChars) * 100) : 100;
+  }
+
+  function getMultiplier() {
+    const normal = Math.min(8, 1 + Math.floor(state.streak / 15));
+    return normal * (isCombo2() ? 2 : 1);
+  }
 
   function updateHud() {
     ui.score.textContent = formatNumber(state.score);
@@ -187,17 +211,19 @@
     return [...WORDS.hard, ...WORDS.expert];
   }
 
-  function wordInitial(word) { return [...word][0]?.toLocaleLowerCase("pt-BR"); }
+  function wordInitial(word) {
+    return [...word][0]?.toLocaleLowerCase("pt-BR");
+  }
 
   function chooseWord() {
     const pool = wordPoolForLevel(state.level);
-    const bonusInitial = wordInitial(enemies.find((e) => e.bonus)?.word || "");
-    for (let attempt = 0; attempt < 20; attempt++) {
+    const specialInitials = new Set(enemies.filter((e) => e.kind !== "normal").map((e) => wordInitial(e.word)));
+    for (let attempt = 0; attempt < 24; attempt++) {
       const word = pool[Math.floor(Math.random() * pool.length)];
-      if (bonusInitial && wordInitial(word) === bonusInitial) continue;
+      if (specialInitials.has(wordInitial(word))) continue;
       if (!enemies.some((e) => e.word === word && e.y < height * 0.55)) return word;
     }
-    return pool.find((word) => !bonusInitial || wordInitial(word) !== bonusInitial) || pool[Math.floor(Math.random() * pool.length)];
+    return pool.find((word) => !specialInitials.has(wordInitial(word))) || pool[Math.floor(Math.random() * pool.length)];
   }
 
   function chooseBonusWord() {
@@ -208,14 +234,19 @@
     return candidates[Math.floor(Math.random() * candidates.length)];
   }
 
+  function chooseBossPhrase() {
+    const pool = WORDS.boss?.length ? WORDS.boss : ["concentração e velocidade conduzem à vitória"];
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
   function spawnEnemy() {
-    if (width < 1 || height < 1) return;
+    if (width < 1 || height < 1 || enemies.some((e) => e.kind === "boss")) return;
     const word = chooseWord();
     const margin = Math.min(145, Math.max(70, width * 0.1));
     const x = margin + Math.random() * Math.max(1, width - margin * 2);
     const baseSpeed = (18 + state.level * 2.35) * difficulty().speed;
     enemies.push({
-      id: makeId(), word, typed: 0, x, y: -40, bonus: false,
+      id: makeId(), kind: "normal", word, typed: 0, x, y: -40,
       speed: baseSpeed * (0.82 + Math.random() * 0.34),
       radius: 15 + Math.min(word.length, 14) * 0.45,
       phase: Math.random() * TAU, rot: Math.random() * TAU,
@@ -224,21 +255,50 @@
   }
 
   function spawnBonus() {
-    if (enemies.some((e) => e.bonus) || !WORDS.bonus?.length) return;
+    if (enemies.some((e) => e.kind !== "normal") || !WORDS.bonus?.length) return false;
     const word = chooseBonusWord();
+    const bonusType = BONUS_TYPES[Math.floor(Math.random() * BONUS_TYPES.length)];
     const margin = Math.min(190, Math.max(100, width * 0.16));
     const x = margin + Math.random() * Math.max(1, width - margin * 2);
     const baseSpeed = (18 + state.level * 2.1) * difficulty().speed;
     enemies.push({
-      id: makeId(), word, typed: 0, x, y: -58, bonus: true,
+      id: makeId(), kind: "bonus", bonusType, word, typed: 0, x, y: -58,
       speed: baseSpeed * 0.68,
       radius: 27 + Math.min(word.length, 22) * 0.32,
       phase: Math.random() * TAU, rot: Math.random() * TAU,
       rotSpeed: (Math.random() - 0.5) * 0.28, pulse: 0, hit: 0
     });
     state.nextBonusAt += BONUS_EVERY_KILLS;
-    showToast("PALAVRA BÔNUS! • LIMPE A TELA");
+    showToast(`BÔNUS • ${BONUS_LABELS[bonusType]}`);
     sfx("bonusAppear");
+    return true;
+  }
+
+  function spawnBoss() {
+    if (enemies.some((e) => e.kind !== "normal")) return false;
+    const phrase = chooseBossPhrase();
+    const baseSpeed = (18 + state.level * 1.75) * difficulty().speed;
+    enemies.push({
+      id: makeId(), kind: "boss", word: phrase, typed: 0,
+      x: width / 2, y: -82, speed: baseSpeed * 0.52,
+      radius: Math.min(52, 39 + phrase.length * 0.18),
+      phase: Math.random() * TAU, rot: 0, rotSpeed: 0.08,
+      pulse: 0, hit: 0, bossLevel: state.nextBossLevel
+    });
+    state.nextBossLevel += BOSS_EVERY_LEVELS;
+    state.spawnClock = 0;
+    showToast(`⚠ CHEFÃO • NÍVEL ${state.level} ⚠`);
+    sfx("bossAppear");
+    return true;
+  }
+
+  function maybeSpawnSpecial() {
+    if (state.mode !== "playing" || enemies.some((e) => e.kind !== "normal")) return;
+    if (state.level >= state.nextBossLevel) {
+      spawnBoss();
+      return;
+    }
+    if (state.kills >= state.nextBonusAt) spawnBonus();
   }
 
   function spawnInterval() {
@@ -246,8 +306,8 @@
     return Math.max(d.minSpawn, (2.25 - state.level * 0.105) * d.spawn);
   }
 
-  function damage() {
-    state.lives -= 1;
+  function damage(amount = 1) {
+    state.lives = Math.max(0, state.lives - amount);
     state.streak = 0;
     state.target = null;
     state.shake = 12;
@@ -257,15 +317,26 @@
     if (state.lives <= 0) endGame(); else showToast("ESCUDO DANIFICADO");
   }
 
+  function clearOtherEnemies(source, golden = false) {
+    const others = enemies.filter((e) => e !== source);
+    for (const other of others) explosion(other.x, other.y, other.radius, golden || other.kind === "bonus");
+    return others.length;
+  }
+
   function destroyEnemy(enemy) {
-    if (enemy.bonus) {
+    if (enemy.kind === "bonus") {
       destroyBonus(enemy);
+      return;
+    }
+    if (enemy.kind === "boss") {
+      destroyBoss(enemy);
       return;
     }
 
     const index = enemies.indexOf(enemy);
     if (index >= 0) enemies.splice(index, 1);
     if (state.target === enemy) state.target = null;
+
     state.kills += 1;
     state.score += Math.round((90 + enemy.word.length * 22 + state.level * 12) * getMultiplier());
     state.level = 1 + Math.floor(state.kills / difficulty().levelStep);
@@ -278,23 +349,56 @@
       showToast(`NÍVEL ${state.level}`);
       sfx("level");
     }
-    if (state.kills >= state.nextBonusAt && !enemies.some((e) => e.bonus)) spawnBonus();
+    maybeSpawnSpecial();
     updateHud();
   }
 
   function destroyBonus(enemy) {
-    const otherEnemies = enemies.filter((e) => e !== enemy);
-    const cleared = otherEnemies.length;
-    for (const other of otherEnemies) explosion(other.x, other.y, other.radius);
-    explosion(enemy.x, enemy.y, enemy.radius * 1.35, true);
-    enemies = [];
+    const type = enemy.bonusType;
+    const index = enemies.indexOf(enemy);
+    if (index >= 0) enemies.splice(index, 1);
     state.target = null;
-    state.score += Math.round((900 + enemy.word.length * 55 + cleared * 140) * getMultiplier());
-    state.shake = Math.max(state.shake, 8);
+    explosion(enemy.x, enemy.y, enemy.radius * 1.35, true);
     shockwaves.push({ x: enemy.x, y: enemy.y, r: 8, alpha: 1, color: "#facc15" });
-    showToast(cleared ? `BÔNUS! • ${cleared} AMEAÇAS ELIMINADAS` : "BÔNUS CONCLUÍDO!");
+    state.score += Math.round((800 + enemy.word.length * 45) * getMultiplier());
+
+    if (type === "clear") {
+      const cleared = clearOtherEnemies(enemy, true);
+      enemies = [];
+      state.score += cleared * 140;
+      showToast(cleared ? `LIMPEZA TOTAL • ${cleared} AMEAÇAS` : "BÔNUS DE LIMPEZA!");
+    } else if (type === "combo") {
+      state.combo2Until = Math.max(state.combo2Until, state.elapsed) + POWER_DURATION;
+      showToast("COMBO ×2 ATIVO • 10 SEGUNDOS");
+    } else if (type === "slow") {
+      state.slowUntil = Math.max(state.slowUntil, state.elapsed) + POWER_DURATION;
+      showToast("CÂMERA LENTA • 10 SEGUNDOS");
+    } else if (type === "shield") {
+      const restored = MAX_LIVES - state.lives;
+      state.lives = MAX_LIVES;
+      state.score += restored ? restored * 180 : 250;
+      showToast(restored ? "ESCUDO RESTAURADO!" : "ESCUDO JÁ ESTAVA COMPLETO • +250");
+    }
+
+    state.shake = Math.max(state.shake, 6);
     sfx("bonus");
     updateHud();
+    setTimeout(maybeSpawnSpecial, 0);
+  }
+
+  function destroyBoss(enemy) {
+    const cleared = clearOtherEnemies(enemy, true);
+    explosion(enemy.x, enemy.y, enemy.radius * 1.7, true);
+    enemies = [];
+    state.target = null;
+    state.score += Math.round((2200 + enemy.word.replace(/\s/g, "").length * 75 + cleared * 160) * getMultiplier());
+    state.shake = Math.max(state.shake, 14);
+    state.flash = Math.max(state.flash, 0.18);
+    shockwaves.push({ x: enemy.x, y: enemy.y, r: 12, alpha: 1, color: "#fb7185" });
+    showToast(cleared ? `CHEFÃO DESTRUÍDO • ${cleared} AMEAÇAS ELIMINADAS` : "CHEFÃO DESTRUÍDO!");
+    sfx("boss");
+    updateHud();
+    setTimeout(maybeSpawnSpecial, 0);
   }
 
   function explosion(x, y, radius, golden = false) {
@@ -309,17 +413,26 @@
     }
   }
 
-  function shipPosition() { return { x: width / 2, y: height - Math.max(78, Math.min(108, height * 0.105)) }; }
+  function shipPosition() {
+    return { x: width / 2, y: height - Math.max(78, Math.min(108, height * 0.105)) };
+  }
 
   function fireLaser(enemy) {
     const ship = shipPosition();
     lasers.push({
       x1: ship.x, y1: ship.y - 19, x2: enemy.x, y2: enemy.y,
-      life: 0.13, maxLife: 0.13, golden: Boolean(enemy.bonus)
+      life: 0.13, maxLife: 0.13,
+      color: enemy.kind === "boss" ? "#fb7185" : (enemy.kind === "bonus" ? "#fde047" : "#78efff")
     });
     enemy.hit = 0.15;
     enemy.pulse = 0.2;
     sfx("type");
+  }
+
+  function skipPhraseSpaces(enemy) {
+    if (enemy.kind !== "boss") return;
+    const letters = [...enemy.word];
+    while (enemy.typed < letters.length && letters[enemy.typed] === " ") enemy.typed += 1;
   }
 
   function processKey(rawKey) {
@@ -331,20 +444,26 @@
     if (!state.target || !enemies.includes(state.target)) {
       const candidates = enemies
         .filter((e) => wordInitial(e.word) === key)
-        .sort((a, b) => b.y - a.y);
+        .sort((a, b) => {
+          const priority = (e) => e.kind === "boss" ? 3 : (e.kind === "bonus" ? 2 : 1);
+          return priority(b) - priority(a) || b.y - a.y;
+        });
       state.target = candidates[0] || null;
     }
 
     const target = state.target;
     if (target) {
+      skipPhraseSpaces(target);
       const letters = [...target.word];
       const expected = letters[target.typed]?.toLocaleLowerCase("pt-BR");
       if (key === expected) {
         target.typed += 1;
+        skipPhraseSpaces(target);
         state.correctChars += 1;
         state.streak += 1;
         state.bestStreak = Math.max(state.bestStreak, state.streak);
-        state.score += (target.bonus ? 10 : 6) * getMultiplier();
+        const charPoints = target.kind === "boss" ? 14 : (target.kind === "bonus" ? 10 : 6);
+        state.score += charPoints * getMultiplier();
         fireLaser(target);
         if (target.typed >= letters.length) destroyEnemy(target);
         updateHud();
@@ -356,11 +475,12 @@
       const firstLetter = letters[0]?.toLocaleLowerCase("pt-BR");
       if (key === firstLetter) {
         target.typed = 1;
+        skipPhraseSpaces(target);
         state.correctChars += 1;
         fireLaser(target);
       }
       state.shake = Math.max(state.shake, 2.5);
-      showToast("ERRO — REDIGITE A PALAVRA");
+      showToast(target.kind === "boss" ? "ERRO • REDIGITE A FRASE" : "ERRO • REDIGITE A PALAVRA");
       sfx("error");
       updateHud();
       return;
@@ -378,28 +498,40 @@
     if (state.mode !== "playing") return;
 
     state.elapsed += dt;
-    state.spawnClock += dt;
-    if (state.spawnClock >= spawnInterval()) {
+    const gameDt = dt * (isSlow() ? 0.48 : 1);
+    state.spawnClock += gameDt;
+
+    maybeSpawnSpecial();
+    if (!enemies.some((e) => e.kind === "boss") && state.spawnClock >= spawnInterval()) {
       state.spawnClock = 0;
       spawnEnemy();
     }
 
     for (const enemy of [...enemies]) {
-      enemy.phase += dt * 1.35;
-      enemy.rot += enemy.rotSpeed * dt;
-      enemy.y += enemy.speed * dt;
-      enemy.x += Math.sin(enemy.phase) * (enemy.bonus ? 3.2 : 5.5) * dt;
-      enemy.hit = Math.max(0, enemy.hit - dt);
-      enemy.pulse = Math.max(0, enemy.pulse - dt);
+      enemy.phase += gameDt * 1.35;
+      enemy.rot += enemy.rotSpeed * gameDt;
+      enemy.y += enemy.speed * gameDt;
+      enemy.x += Math.sin(enemy.phase) * (enemy.kind === "boss" ? 1.4 : (enemy.kind === "bonus" ? 3.2 : 5.5)) * gameDt;
+      if (enemy.kind === "boss") enemy.x = width / 2 + Math.sin(enemy.phase * 0.55) * Math.min(width * 0.18, 150);
+      enemy.hit = Math.max(0, enemy.hit - gameDt);
+      enemy.pulse = Math.max(0, enemy.pulse - gameDt);
 
       if (enemy.y > height - 64) {
         enemies.splice(enemies.indexOf(enemy), 1);
         if (state.target === enemy) state.target = null;
 
-        if (enemy.bonus) {
+        if (enemy.kind === "bonus") {
           explosion(enemy.x, height - 66, enemy.radius, true);
           showToast("BÔNUS PERDIDO • MISSÃO CONTINUA");
           sfx("bonusMiss");
+          continue;
+        }
+
+        if (enemy.kind === "boss") {
+          explosion(enemy.x, height - 66, enemy.radius, true);
+          damage(1);
+          if (state.mode === "playing") showToast("CHEFÃO ESCAPOU • ESCUDO DANIFICADO");
+          sfx("bossMiss");
           continue;
         }
 
@@ -416,8 +548,9 @@
 
   function updateStars(dt) {
     const multiplier = state.mode === "playing" ? 1 + Math.min(state.level * 0.025, 0.35) : 0.35;
+    const slowVisual = isSlow() ? 0.5 : 1;
     for (const star of stars) {
-      star.y += star.speed * multiplier * dt;
+      star.y += star.speed * multiplier * slowVisual * dt;
       if (star.y > height + 3) { star.y = -3; star.x = Math.random() * width; }
     }
   }
@@ -447,6 +580,7 @@
     drawParticles();
     drawShip();
     drawTargetLink();
+    drawPowerStatus();
     if (state.flash > 0) {
       ctx.fillStyle = `rgba(251,113,133,${Math.min(0.12, state.flash * 0.35)})`;
       ctx.fillRect(-20, -20, width + 40, height + 40);
@@ -456,7 +590,7 @@
 
   function drawBackground() {
     const gradient = ctx.createRadialGradient(width / 2, height * 0.72, 0, width / 2, height * 0.72, Math.max(width, height) * 0.72);
-    gradient.addColorStop(0, "rgba(11,39,78,.16)");
+    gradient.addColorStop(0, isSlow() ? "rgba(40,70,125,.22)" : "rgba(11,39,78,.16)");
     gradient.addColorStop(0.48, "rgba(6,15,39,.1)");
     gradient.addColorStop(1, "rgba(2,5,16,0)");
     ctx.fillStyle = gradient;
@@ -483,12 +617,12 @@
   }
 
   function drawEnemy(enemy) {
-    if (enemy.bonus) {
-      drawBonusEnemy(enemy);
-      drawWord(enemy, state.target === enemy);
-      return;
-    }
+    if (enemy.kind === "bonus") return drawBonusEnemy(enemy);
+    if (enemy.kind === "boss") return drawBossEnemy(enemy);
+    drawNormalEnemy(enemy);
+  }
 
+  function drawNormalEnemy(enemy) {
     const isTarget = state.target === enemy;
     ctx.save();
     ctx.translate(enemy.x, enemy.y);
@@ -517,20 +651,17 @@
     ctx.fillStyle = isTarget ? "rgba(103,232,249,.8)" : "rgba(133,151,176,.5)";
     ctx.beginPath(); ctx.arc(0, 0, 2.4, 0, TAU); ctx.fill();
     ctx.restore();
-    drawWord(enemy, isTarget);
+    drawTextForEnemy(enemy, isTarget);
   }
 
   function drawBonusEnemy(enemy) {
     const isTarget = state.target === enemy;
     ctx.save();
     ctx.translate(enemy.x, enemy.y);
-
     const halo = ctx.createRadialGradient(0, 0, 2, 0, 0, enemy.radius * (isTarget ? 4.1 : 3.2));
     halo.addColorStop(0, isTarget ? "rgba(250,204,21,.32)" : "rgba(250,204,21,.2)");
     halo.addColorStop(1, "rgba(250,204,21,0)");
-    ctx.fillStyle = halo;
-    ctx.beginPath(); ctx.arc(0, 0, enemy.radius * (isTarget ? 4.1 : 3.2), 0, TAU); ctx.fill();
-
+    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(0, 0, enemy.radius * (isTarget ? 4.1 : 3.2), 0, TAU); ctx.fill();
     ctx.rotate(enemy.rot);
     ctx.shadowBlur = enemy.hit > 0 ? 32 : 22;
     ctx.shadowColor = "rgba(250,204,21,.72)";
@@ -545,56 +676,92 @@
       i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
     }
     ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = "#fde68a";
-    ctx.beginPath(); ctx.arc(0, 0, 4, 0, TAU); ctx.fill();
     ctx.restore();
+    drawTextForEnemy(enemy, isTarget);
   }
 
-  function drawWord(enemy, isTarget) {
+  function drawBossEnemy(enemy) {
+    const isTarget = state.target === enemy;
+    ctx.save();
+    ctx.translate(enemy.x, enemy.y);
+    const halo = ctx.createRadialGradient(0, 0, 4, 0, 0, enemy.radius * 4.2);
+    halo.addColorStop(0, isTarget ? "rgba(251,113,133,.3)" : "rgba(168,85,247,.2)");
+    halo.addColorStop(1, "rgba(251,113,133,0)");
+    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(0, 0, enemy.radius * 4.2, 0, TAU); ctx.fill();
+
+    ctx.rotate(enemy.rot);
+    ctx.shadowBlur = enemy.hit > 0 ? 38 : 26;
+    ctx.shadowColor = "rgba(251,113,133,.75)";
+    ctx.fillStyle = enemy.hit > 0 ? "#ffe4e6" : "rgba(61,18,48,.98)";
+    ctx.strokeStyle = isTarget ? "#fda4af" : "#fb7185";
+    ctx.lineWidth = isTarget ? 3 : 2;
+    ctx.beginPath();
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * TAU - Math.PI / 2;
+      const r = enemy.radius * (i % 2 ? 0.72 : 1.05);
+      const px = Math.cos(a) * r, py = Math.sin(a) * r;
+      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+    }
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#fda4af";
+    ctx.beginPath(); ctx.arc(0, 0, 7, 0, TAU); ctx.fill();
+    ctx.restore();
+    drawTextForEnemy(enemy, isTarget);
+  }
+
+  function drawTextForEnemy(enemy, isTarget) {
     const chars = [...enemy.word];
     const typed = chars.slice(0, enemy.typed).join("");
     const rest = chars.slice(enemy.typed).join("");
-    let fontSize = enemy.bonus ? Math.max(20, Math.min(27, width / 52)) : Math.max(14, Math.min(18, width / 75));
+    const special = enemy.kind !== "normal";
+    let fontSize = enemy.kind === "boss" ? Math.max(17, Math.min(24, width / 54)) : (enemy.kind === "bonus" ? Math.max(20, Math.min(27, width / 52)) : Math.max(14, Math.min(18, width / 75)));
 
     ctx.save();
-    ctx.font = `${enemy.bonus ? 950 : 800} ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+    ctx.font = `${special ? 950 : 800} ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
     let typedW = ctx.measureText(typed).width;
     let restW = ctx.measureText(rest).width;
     let totalW = typedW + restW;
     const maxW = Math.max(120, width - 32);
     if (totalW > maxW) {
       fontSize *= maxW / totalW;
-      ctx.font = `${enemy.bonus ? 950 : 800} ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+      ctx.font = `${special ? 950 : 800} ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
       typedW = ctx.measureText(typed).width;
       restW = ctx.measureText(rest).width;
       totalW = typedW + restW;
     }
     ctx.textBaseline = "middle";
     const x = enemy.x - totalW / 2;
-    const y = enemy.y - enemy.radius - (enemy.bonus ? 27 : 20);
+    const y = enemy.y - enemy.radius - (special ? 29 : 20);
 
-    if (enemy.bonus) {
+    if (enemy.kind === "bonus") {
       ctx.textAlign = "center";
       ctx.font = `900 ${Math.max(8, fontSize * 0.42)}px ui-sans-serif, system-ui, sans-serif`;
-      ctx.fillStyle = "rgba(250,204,21,.85)";
-      ctx.fillText("★ BÔNUS ★", enemy.x, y - fontSize * 0.95);
+      ctx.fillStyle = "rgba(250,204,21,.92)";
+      ctx.fillText(`★ BÔNUS • ${BONUS_LABELS[enemy.bonusType]} ★`, enemy.x, y - fontSize * 0.95);
+      ctx.textAlign = "left";
+      ctx.font = `950 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+    } else if (enemy.kind === "boss") {
+      ctx.textAlign = "center";
+      ctx.font = `950 ${Math.max(9, fontSize * 0.48)}px ui-sans-serif, system-ui, sans-serif`;
+      ctx.fillStyle = "#fb7185";
+      ctx.fillText(`⚠ CHEFÃO • NÍVEL ${enemy.bossLevel} ⚠`, enemy.x, y - fontSize * 1.05);
       ctx.textAlign = "left";
       ctx.font = `950 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
     }
 
     if (isTarget) {
-      ctx.fillStyle = enemy.bonus ? "rgba(56,39,4,.82)" : "rgba(4,14,31,.74)";
+      ctx.fillStyle = enemy.kind === "boss" ? "rgba(45,11,35,.86)" : (enemy.kind === "bonus" ? "rgba(56,39,4,.82)" : "rgba(4,14,31,.74)");
       roundRect(ctx, x - 9, y - fontSize / 2 - 6, totalW + 18, fontSize + 12, 7);
       ctx.fill();
-      ctx.strokeStyle = enemy.bonus ? "rgba(250,204,21,.5)" : "rgba(103,232,249,.12)";
+      ctx.strokeStyle = enemy.kind === "boss" ? "rgba(251,113,133,.6)" : (enemy.kind === "bonus" ? "rgba(250,204,21,.5)" : "rgba(103,232,249,.12)");
       ctx.stroke();
     }
 
-    ctx.fillStyle = enemy.bonus ? "#fff3a3" : (isTarget ? "#62dfee" : "rgba(121,143,168,.7)");
-    ctx.fillText(typed, x, y);
-    ctx.fillStyle = enemy.bonus ? "#facc15" : (isTarget ? "#edfaff" : "#c4d0dd");
-    ctx.fillText(rest, x + typedW, y);
+    const typedColor = enemy.kind === "boss" ? "#fecdd3" : (enemy.kind === "bonus" ? "#fff3a3" : (isTarget ? "#62dfee" : "rgba(121,143,168,.7)"));
+    const restColor = enemy.kind === "boss" ? "#fb7185" : (enemy.kind === "bonus" ? "#facc15" : (isTarget ? "#edfaff" : "#c4d0dd"));
+    ctx.fillStyle = typedColor; ctx.fillText(typed, x, y);
+    ctx.fillStyle = restColor; ctx.fillText(rest, x + typedW, y);
     ctx.restore();
   }
 
@@ -629,7 +796,7 @@
     if (!state.target || state.mode !== "playing") return;
     const ship = shipPosition();
     ctx.save();
-    ctx.strokeStyle = state.target.bonus ? "rgba(250,204,21,.16)" : "rgba(103,232,249,.055)";
+    ctx.strokeStyle = state.target.kind === "boss" ? "rgba(251,113,133,.22)" : (state.target.kind === "bonus" ? "rgba(250,204,21,.16)" : "rgba(103,232,249,.055)");
     ctx.setLineDash([3, 8]);
     ctx.beginPath(); ctx.moveTo(ship.x, ship.y - 30); ctx.lineTo(state.target.x, state.target.y + 16); ctx.stroke();
     ctx.restore();
@@ -639,10 +806,10 @@
     for (const l of lasers) {
       ctx.save();
       ctx.globalAlpha = Math.max(0, l.life / l.maxLife);
-      ctx.strokeStyle = l.golden ? "#fde047" : "#78efff";
+      ctx.strokeStyle = l.color;
       ctx.shadowBlur = 13;
-      ctx.shadowColor = l.golden ? "#facc15" : "#67e8f9";
-      ctx.lineWidth = l.golden ? 2.5 : 2;
+      ctx.shadowColor = l.color;
+      ctx.lineWidth = l.color === "#78efff" ? 2 : 2.6;
       ctx.beginPath(); ctx.moveTo(l.x1, l.y1); ctx.lineTo(l.x2, l.y2); ctx.stroke();
       ctx.restore();
     }
@@ -658,10 +825,37 @@
       ctx.save();
       ctx.globalAlpha = s.alpha;
       ctx.strokeStyle = s.color || "#79ecff";
-      ctx.lineWidth = s.color === "#facc15" ? 2.4 : 1.4;
+      ctx.lineWidth = s.color ? 2.3 : 1.4;
       ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, TAU); ctx.stroke();
       ctx.restore();
     }
+  }
+
+  function drawPowerStatus() {
+    const effects = [];
+    if (isCombo2()) effects.push({ label: "COMBO ×2", remaining: state.combo2Until - state.elapsed, color: "#facc15" });
+    if (isSlow()) effects.push({ label: "CÂMERA LENTA", remaining: state.slowUntil - state.elapsed, color: "#93c5fd" });
+    if (!effects.length) return;
+
+    ctx.save();
+    ctx.font = "800 11px ui-sans-serif, system-ui, sans-serif";
+    ctx.textAlign = "right";
+    let y = 112;
+    for (const effect of effects) {
+      const text = `${effect.label} • ${Math.max(0, effect.remaining).toFixed(1)}s`;
+      const w = ctx.measureText(text).width + 20;
+      ctx.fillStyle = "rgba(5,10,27,.76)";
+      roundRect(ctx, width - w - 18, y - 14, w, 26, 10);
+      ctx.fill();
+      ctx.strokeStyle = effect.color;
+      ctx.globalAlpha = 0.55;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = effect.color;
+      ctx.fillText(text, width - 28, y);
+      y += 32;
+    }
+    ctx.restore();
   }
 
   function loop(now) {
@@ -676,7 +870,7 @@
     ui.toast.textContent = text;
     ui.toast.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => ui.toast.classList.remove("show"), 1450);
+    toastTimer = setTimeout(() => ui.toast.classList.remove("show"), 1550);
   }
 
   function ensureAudio() {
@@ -707,6 +901,9 @@
       else if (name === "bonusAppear") { tone(520, 0.12, 0.025, "triangle", 220); setTimeout(() => tone(780, 0.16, 0.022, "sine", 180), 100); }
       else if (name === "bonus") { tone(440, 0.14, 0.03, "triangle", 260); setTimeout(() => tone(720, 0.18, 0.028, "triangle", 260), 90); setTimeout(() => tone(980, 0.24, 0.024, "sine", 260), 190); }
       else if (name === "bonusMiss") tone(220, 0.16, 0.018, "triangle", -70);
+      else if (name === "bossAppear") { tone(130, 0.34, 0.042, "sawtooth", -35); setTimeout(() => tone(195, 0.3, 0.032, "triangle", 95), 230); }
+      else if (name === "boss") { tone(180, 0.18, 0.04, "sawtooth", 220); setTimeout(() => tone(480, 0.24, 0.032, "triangle", 300), 120); setTimeout(() => tone(820, 0.35, 0.026, "sine", 240), 280); }
+      else if (name === "bossMiss") tone(95, 0.45, 0.045, "sawtooth", -35);
       else if (name === "gameover") tone(240, 0.5, 0.035, "triangle", -150);
     } catch (_) {}
   }
@@ -733,7 +930,7 @@
       state.target.typed = 0;
       state.streak = 0;
       typingInput.value = "";
-      showToast("PALAVRA REINICIADA");
+      showToast(state.target.kind === "boss" ? "FRASE REINICIADA" : "PALAVRA REINICIADA");
       updateHud();
       focusTypingInput();
       return;
