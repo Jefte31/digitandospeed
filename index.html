@@ -70,7 +70,10 @@
     <section id="pauseScreen" class="overlay">
       <div class="panel compact-panel">
         <div class="eyebrow">MISSÃO SUSPENSA</div><h2>Jogo pausado</h2><p>Seu progresso está seguro.</p>
-        <button id="resumeBtn" class="primary-button" type="button">CONTINUAR</button>
+        <div class="panel-actions">
+          <button id="resumeBtn" class="primary-button" type="button">CONTINUAR</button>
+          <button class="secondary-button" type="button" onclick="window.location.reload()">VOLTAR AO MENU</button>
+        </div>
       </div>
     </section>
 
@@ -84,7 +87,10 @@
           <div><span>NÍVEL</span><strong id="finalLevel">1</strong></div>
         </div>
         <p id="newRecord" class="new-record" hidden>NOVO RECORDE!</p>
-        <button id="restartBtn" class="primary-button" type="button">JOGAR NOVAMENTE</button>
+        <div class="panel-actions">
+          <button id="restartBtn" class="primary-button" type="button">JOGAR NOVAMENTE</button>
+          <button class="secondary-button" type="button" onclick="window.location.reload()">VOLTAR AO MENU</button>
+        </div>
       </div>
     </section>
 
