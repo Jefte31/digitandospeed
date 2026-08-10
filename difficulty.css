@@ -1,5 +1,6 @@
-.difficulty-picker {
-  margin: 22px 0 20px;
+.difficulty-picker,
+.training-picker {
+  margin: 18px 0 16px;
   display: grid;
   gap: 10px;
 }
@@ -18,7 +19,14 @@
   gap: 8px;
 }
 
-.difficulty-btn {
+.training-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.difficulty-btn,
+.training-btn {
   min-height: 70px;
   padding: 11px 8px;
   border: 1px solid rgba(255,255,255,.07);
@@ -29,13 +37,17 @@
   transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
 }
 
-.difficulty-btn strong {
+.training-btn { min-height: 62px; }
+
+.difficulty-btn strong,
+.training-btn strong {
   display: block;
   font-size: 13px;
   letter-spacing: .02em;
 }
 
-.difficulty-btn span {
+.difficulty-btn span,
+.training-btn span {
   display: block;
   margin-top: 5px;
   color: #70869b;
@@ -43,30 +55,37 @@
   line-height: 1.25;
 }
 
-.difficulty-btn:hover {
+.difficulty-btn:hover,
+.training-btn:hover {
   transform: translateY(-1px);
   border-color: rgba(103,232,249,.3);
   background: rgba(103,232,249,.045);
 }
 
 .difficulty-btn.active,
-.difficulty-btn[aria-pressed="true"] {
+.difficulty-btn[aria-pressed="true"],
+.training-btn.active,
+.training-btn[aria-pressed="true"] {
   border-color: rgba(103,232,249,.72);
   background: linear-gradient(180deg, rgba(49,133,183,.18), rgba(34,81,121,.1));
   box-shadow: inset 0 0 18px rgba(103,232,249,.05), 0 0 24px rgba(66,165,255,.08);
 }
 
 .difficulty-btn.active strong,
-.difficulty-btn[aria-pressed="true"] strong {
+.difficulty-btn[aria-pressed="true"] strong,
+.training-btn.active strong,
+.training-btn[aria-pressed="true"] strong {
   color: #8ff4ff;
 }
 
-.difficulty-pill {
+.difficulty-pill,
+.training-pill {
   min-width: 76px;
   padding-left: 2px;
 }
 
-.difficulty-pill strong {
+.difficulty-pill strong,
+.training-pill strong {
   display: block;
   margin-top: 4px;
   color: #dffbff;
@@ -111,11 +130,13 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .difficulty-btn {
+  .difficulty-btn,
+  .training-btn {
     min-height: 62px;
   }
 
-  .difficulty-pill {
+  .difficulty-pill,
+  .training-pill {
     display: none;
   }
 }
