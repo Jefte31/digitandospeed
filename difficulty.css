@@ -73,6 +73,39 @@
   font-size: 12px;
 }
 
+.panel-actions {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  margin-top: 18px;
+}
+
+.panel-actions .primary-button,
+.panel-actions .secondary-button {
+  width: min(280px, 100%);
+}
+
+.secondary-button {
+  min-width: 230px;
+  padding: 14px 22px;
+  border: 1px solid rgba(103,232,249,.2);
+  border-radius: 13px;
+  background: rgba(255,255,255,.035);
+  color: #b9cfdd;
+  cursor: pointer;
+  font-weight: 850;
+  letter-spacing: .11em;
+  font-size: 11px;
+  transition: transform .16s ease, border-color .16s ease, background .16s ease, color .16s ease;
+}
+
+.secondary-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(103,232,249,.48);
+  background: rgba(103,232,249,.07);
+  color: #e7fbff;
+}
+
 @media (max-width: 720px) {
   .difficulty-options {
     grid-template-columns: repeat(2, minmax(0, 1fr));
