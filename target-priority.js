@@ -19,6 +19,10 @@
     return nativeSort.call(this, compareFn);
   };
 
+  document.addEventListener("keydown", (event) => {
+    if (event.target?.id === "commanderName") event.stopPropagation();
+  });
+
   if (!document.querySelector('link[href="ranking.css"]')) {
     const style = document.createElement("link");
     style.rel = "stylesheet";
