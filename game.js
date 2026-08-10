@@ -249,9 +249,20 @@
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
+  function canSpawnEasyEnemy() {
+    if (!isEasy()) return true;
+    const normals = enemies.filter((e) => e.kind === "normal");
+    if (normals.length < 3) return true;
+    if (normals.length >= 5) return false;
+
+    const lowestY = Math.max(...normals.map((e) => e.y));
+    const threshold = normals.length === 3 ? height * 0.22 : height * 0.42;
+    return lowestY >= threshold;
+  }
+
   function spawnEnemy() {
-    if (width < 1 || height < 1 || enemies.some((e) => e.kind === "boss")) return;
-    if (isEasy() && enemies.filter((e) => e.kind === "normal").length >= 3) return;
+    if (width < 1 || height < 1 || enemies.some((e) => e.kind === "boss")) return false;
+    if (!canSpawnEasyEnemy()) return false;
 
     const word = chooseWord();
     const margin = Math.min(145, Math.max(70, width * 0.1));
@@ -265,6 +276,7 @@
       phase: Math.random() * TAU, rot: Math.random() * TAU,
       rotSpeed: (Math.random() - 0.5) * 0.8, pulse: 0, hit: 0
     });
+    return true;
   }
 
   function spawnBonus() {
@@ -444,8 +456,6 @@
     const key = rawKey.toLocaleLowerCase("pt-BR");
     if (!key || [...key].length !== 1) return;
 
-    // Espaço é parte real das frases dos chefões. Fora de um chefão já selecionado,
-    // a barra de espaço é ignorada para não gerar erros acidentais.
     if (key === " " && (!state.target || state.target.kind !== "boss")) return;
 
     state.totalChars += 1;
@@ -478,8 +488,6 @@
         return;
       }
 
-      // Ao errar, a palavra/frase volta ao início e o alvo é liberado.
-      // Assim o jogador pode deixá-la passar e escolher qualquer outra palavra.
       state.streak = 0;
       target.typed = 0;
       state.target = null;
@@ -508,8 +516,7 @@
 
     maybeSpawnSpecial();
     if (!enemies.some((e) => e.kind === "boss") && state.spawnClock >= spawnInterval()) {
-      state.spawnClock = 0;
-      spawnEnemy();
+      if (spawnEnemy()) state.spawnClock = 0;
     }
 
     for (const enemy of [...enemies]) {
