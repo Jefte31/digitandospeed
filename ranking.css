@@ -1,3 +1,69 @@
+.commander-box {
+  width: min(430px, 100%);
+  margin: 2px auto 14px;
+  text-align: left;
+}
+
+.commander-box > label {
+  display: block;
+  margin: 0 0 7px;
+  color: #8fa4b8;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .16em;
+}
+
+.commander-input-wrap {
+  position: relative;
+}
+
+.commander-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #67e8f9;
+  font-size: 17px;
+  pointer-events: none;
+}
+
+.commander-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px 12px 38px;
+  border: 1px solid rgba(103,232,249,.18);
+  border-radius: 12px;
+  outline: none;
+  background: rgba(4,14,31,.72);
+  color: #e8faff;
+  font: 800 13px ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: .02em;
+  transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+
+.commander-input::placeholder { color: #526b7f; }
+
+.commander-input:focus {
+  border-color: rgba(103,232,249,.68);
+  background: rgba(6,20,42,.88);
+  box-shadow: 0 0 0 3px rgba(103,232,249,.07), 0 0 24px rgba(103,232,249,.07);
+}
+
+.commander-input.invalid {
+  border-color: rgba(251,113,133,.75);
+  box-shadow: 0 0 0 3px rgba(251,113,133,.07);
+}
+
+.commander-error {
+  display: none;
+  margin: 6px 2px 0;
+  color: #fda4af;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.commander-error.visible { display: block; }
+
 .ranking-button {
   width: min(280px, 100%);
   min-height: 46px;
@@ -38,7 +104,7 @@
 .ranking-overlay.visible { display: grid; }
 
 .ranking-panel {
-  width: min(760px, 100%);
+  width: min(820px, 100%);
   max-height: min(760px, calc(100vh - 44px));
   overflow: auto;
   padding: 24px;
@@ -138,7 +204,7 @@
 .ranking-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 570px;
+  min-width: 690px;
 }
 
 .ranking-table th,
@@ -151,7 +217,9 @@
 .ranking-table th:first-child,
 .ranking-table td:first-child,
 .ranking-table th:nth-child(2),
-.ranking-table td:nth-child(2) { text-align: left; }
+.ranking-table td:nth-child(2),
+.ranking-table th:nth-child(3),
+.ranking-table td:nth-child(3) { text-align: left; }
 
 .ranking-table th {
   color: #6f8699;
@@ -162,6 +230,15 @@
 .ranking-table td {
   color: #d6e6ee;
   font-size: 12px;
+}
+
+.ranking-commander {
+  max-width: 190px;
+  overflow: hidden;
+  color: #a5f3fc !important;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ranking-table tbody tr:nth-child(1) td:first-child { color: #facc15; font-weight: 950; }
@@ -184,6 +261,7 @@
 }
 
 @media (max-width: 620px) {
+  .commander-box { width: 100%; }
   .ranking-panel { padding: 18px; }
   .ranking-difficulties { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .ranking-filters { align-items: stretch; flex-direction: column; }
