@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#050816" />
-  <meta name="description" content="Digitando Speed — jogo brasileiro de treino de digitação e teclado numérico." />
-  <title>Digitando Speed</title>
+  <meta name="description" content="DIGITSPEED — jogo de treino de digitação e teclado numérico." />
+  <title>DIGITSPEED</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="difficulty.css" />
   <link rel="stylesheet" href="i18n.css" />
 </head>
 <body>
-  <main id="app" aria-label="Digitando Speed">
+  <main id="app" aria-label="DIGITSPEED">
     <canvas id="gameCanvas" aria-label="Área do jogo"></canvas>
 
     <header class="hud" id="hud" aria-live="polite">
@@ -20,9 +20,9 @@
         <div class="stat"><span class="label">NÍVEL</span><strong id="level">1</strong></div>
       </section>
 
-      <section class="brand" aria-label="Digitando Speed">
+      <section class="brand" aria-label="DIGITSPEED">
         <span class="brand-mark">DS</span>
-        <div><strong>DIGITANDO</strong><span>SPEED</span></div>
+        <div><strong>DIGIT</strong><span>SPEED</span></div>
       </section>
 
       <section class="hud-group hud-right">
@@ -43,7 +43,7 @@
     <section id="startScreen" class="overlay visible">
       <div class="panel hero-panel">
         <div class="eyebrow">TREINE • ACELERE • DOMINE</div>
-        <h1>Digitando <span>Speed</span></h1>
+        <h1>DIGIT<span>SPEED</span></h1>
         <p class="lead">Destrua as ameaças digitando as palavras em português antes que elas alcancem sua nave.</p>
 
         <div class="feature-grid">
@@ -111,8 +111,9 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </main>
   <script src="words.js"></script>
+  <script src="language-bootstrap.js"></script>
+  <script src="i18n.js"></script>
   <script src="game.js"></script>
   <script src="target-priority.js"></script>
-  <script src="i18n.js"></script>
 </body>
 </html>
