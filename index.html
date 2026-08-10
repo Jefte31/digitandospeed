@@ -7,6 +7,7 @@
   <meta name="description" content="Digitando Speed — jogo brasileiro de digitação espacial em português." />
   <title>Digitando Speed</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="difficulty.css" />
 </head>
 <body>
   <main id="app" aria-label="Digitando Speed">
@@ -14,46 +15,25 @@
 
     <header class="hud" id="hud" aria-live="polite">
       <section class="hud-group hud-left">
-        <div class="stat stat-score">
-          <span class="label">PONTOS</span>
-          <strong id="score">0</strong>
-        </div>
-        <div class="stat">
-          <span class="label">NÍVEL</span>
-          <strong id="level">1</strong>
-        </div>
+        <div class="stat stat-score"><span class="label">PONTOS</span><strong id="score">0</strong></div>
+        <div class="stat"><span class="label">NÍVEL</span><strong id="level">1</strong></div>
       </section>
 
       <section class="brand" aria-label="Digitando Speed">
         <span class="brand-mark">DS</span>
-        <div>
-          <strong>DIGITANDO</strong>
-          <span>SPEED</span>
-        </div>
+        <div><strong>DIGITANDO</strong><span>SPEED</span></div>
       </section>
 
       <section class="hud-group hud-right">
-        <div class="stat">
-          <span class="label">PPM</span>
-          <strong id="wpm">0</strong>
-        </div>
-        <div class="stat">
-          <span class="label">PRECISÃO</span>
-          <strong id="accuracy">100%</strong>
-        </div>
+        <div class="stat"><span class="label">PPM</span><strong id="wpm">0</strong></div>
+        <div class="stat"><span class="label">PRECISÃO</span><strong id="accuracy">100%</strong></div>
       </section>
     </header>
 
     <aside class="status-bar">
-      <div class="lives" aria-label="Vidas">
-        <span class="label">ESCUDO</span>
-        <div id="lives" class="life-icons"></div>
-      </div>
-      <div class="combo-wrap">
-        <span class="label">COMBO</span>
-        <strong id="combo">x1</strong>
-        <div class="combo-track"><span id="comboFill"></span></div>
-      </div>
+      <div class="lives" aria-label="Vidas"><span class="label">ESCUDO</span><div id="lives" class="life-icons"></div></div>
+      <div class="combo-wrap"><span class="label">COMBO</span><strong id="combo">x1</strong><div class="combo-track"><span id="comboFill"></span></div></div>
+      <div class="difficulty-pill"><span class="label">MODO</span><strong id="currentDifficulty">Médio</strong></div>
       <button id="soundBtn" class="icon-button" type="button" aria-label="Ativar ou desativar som" title="Som">♪</button>
       <button id="pauseBtn" class="icon-button" type="button" aria-label="Pausar jogo" title="Pausar (Barra de espaço)">Ⅱ</button>
     </aside>
@@ -71,25 +51,32 @@
           <div><strong>%</strong><span>Precisão e combo</span></div>
         </div>
 
+        <div class="difficulty-picker">
+          <p class="difficulty-title">ESCOLHA A DIFICULDADE</p>
+          <div class="difficulty-options" role="radiogroup" aria-label="Dificuldade do jogo">
+            <button class="difficulty-btn" data-difficulty="easy" type="button" aria-pressed="false"><strong>Fácil</strong><span>Mais tempo para digitar</span></button>
+            <button class="difficulty-btn active" data-difficulty="medium" type="button" aria-pressed="true"><strong>Médio</strong><span>Experiência padrão</span></button>
+            <button class="difficulty-btn" data-difficulty="hard" type="button" aria-pressed="false"><strong>Difícil</strong><span>Mais rápido e intenso</span></button>
+            <button class="difficulty-btn" data-difficulty="extreme" type="button" aria-pressed="false"><strong>Extremo</strong><span>Para digitadores velozes</span></button>
+          </div>
+        </div>
+
         <button id="startBtn" class="primary-button" type="button">INICIAR MISSÃO</button>
-        <p class="keyboard-tip">Comece digitando qualquer palavra • <kbd>Espaço</kbd> pausa/continua</p>
+        <p class="keyboard-tip">Comece digitando qualquer palavra • <kbd>Espaço</kbd> pausa/continua • <kbd>Backspace</kbd> reinicia a palavra</p>
         <p class="record">Recorde local: <strong id="bestScore">0</strong></p>
       </div>
     </section>
 
     <section id="pauseScreen" class="overlay">
       <div class="panel compact-panel">
-        <div class="eyebrow">MISSÃO SUSPENSA</div>
-        <h2>Jogo pausado</h2>
-        <p>Seu progresso está seguro.</p>
+        <div class="eyebrow">MISSÃO SUSPENSA</div><h2>Jogo pausado</h2><p>Seu progresso está seguro.</p>
         <button id="resumeBtn" class="primary-button" type="button">CONTINUAR</button>
       </div>
     </section>
 
     <section id="gameOverScreen" class="overlay">
       <div class="panel compact-panel">
-        <div class="eyebrow danger">MISSÃO ENCERRADA</div>
-        <h2>Fim de jogo</h2>
+        <div class="eyebrow danger">MISSÃO ENCERRADA</div><h2>Fim de jogo</h2>
         <div class="results">
           <div><span>PONTUAÇÃO</span><strong id="finalScore">0</strong></div>
           <div><span>PPM</span><strong id="finalWpm">0</strong></div>
@@ -103,7 +90,6 @@
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </main>
-
   <script src="words.js"></script>
   <script src="game.js"></script>
 </body>
