@@ -43,10 +43,10 @@
       <div class="panel hero-panel">
         <div class="eyebrow">TREINE • ACELERE • DOMINE</div>
         <h1>Digitando <span>Speed</span></h1>
-        <p id="leadText" class="lead">Destrua as ameaças digitando as palavras em português antes que elas alcancem sua nave.</p>
+        <p class="lead">Destrua as ameaças digitando as palavras em português antes que elas alcancem sua nave.</p>
 
         <div class="feature-grid">
-          <div><strong id="trainingFeatureCode">PT-BR</strong><span id="trainingFeatureText">Vocabulário brasileiro</span></div>
+          <div><strong>PT-BR</strong><span>Vocabulário brasileiro</span></div>
           <div><strong>∞</strong><span>Dificuldade progressiva</span></div>
           <div><strong>PPM</strong><span>Velocidade em tempo real</span></div>
           <div><strong>%</strong><span>Precisão e combo</span></div>
@@ -55,10 +55,10 @@
         <div class="training-picker">
           <p class="difficulty-title">ESCOLHA O TIPO DE TREINO</p>
           <div class="training-options" role="radiogroup" aria-label="Tipo de treino">
-            <button class="training-btn active" data-training="words" type="button" aria-pressed="true">
+            <button class="training-btn active" type="button" aria-pressed="true">
               <strong>PALAVRAS</strong><span>Letras, acentos e frases</span>
             </button>
-            <button class="training-btn" data-training="numpad" type="button" aria-pressed="false">
+            <button class="training-btn" type="button" aria-pressed="false" onclick="window.location.href='numpad.html'">
               <strong>NUMPAD</strong><span>Teclado numérico 0–9</span>
             </button>
           </div>
@@ -75,7 +75,7 @@
         </div>
 
         <button id="startBtn" class="primary-button" type="button">INICIAR MISSÃO</button>
-        <p id="keyboardTip" class="keyboard-tip">Comece digitando qualquer palavra • <kbd>Tab</kbd> pausa/continua • <kbd>Espaço</kbd> faz parte das frases • <kbd>Backspace</kbd> reinicia o alvo</p>
+        <p class="keyboard-tip">Comece digitando qualquer palavra • <kbd>Tab</kbd> pausa/continua • <kbd>Espaço</kbd> faz parte das frases • <kbd>Backspace</kbd> reinicia o alvo</p>
         <p class="record">Recorde local: <strong id="bestScore">0</strong></p>
       </div>
     </section>
