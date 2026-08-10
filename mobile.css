@@ -30,6 +30,15 @@ html.ds-touch #app {
   min-height: 0 !important;
 }
 
+html.ds-touch #gameCanvas {
+  width: var(--ds-game-width, 100vw) !important;
+  height: var(--ds-game-height, 100dvh) !important;
+}
+
+html.ds-touch .overlay {
+  height: 100%;
+}
+
 html.ds-touch .mobile-keyboard-button {
   display: flex;
   width: auto;
