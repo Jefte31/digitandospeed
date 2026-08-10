@@ -14,26 +14,48 @@
 
     <header class="hud" id="hud" aria-live="polite">
       <section class="hud-group hud-left">
-        <div class="stat stat-score"><span class="label">PONTOS</span><strong id="score">0</strong></div>
-        <div class="stat"><span class="label">NÍVEL</span><strong id="level">1</strong></div>
+        <div class="stat stat-score">
+          <span class="label">PONTOS</span>
+          <strong id="score">0</strong>
+        </div>
+        <div class="stat">
+          <span class="label">NÍVEL</span>
+          <strong id="level">1</strong>
+        </div>
       </section>
 
       <section class="brand" aria-label="Digitando Speed">
         <span class="brand-mark">DS</span>
-        <div><strong>DIGITANDO</strong><span>SPEED</span></div>
+        <div>
+          <strong>DIGITANDO</strong>
+          <span>SPEED</span>
+        </div>
       </section>
 
       <section class="hud-group hud-right">
-        <div class="stat"><span class="label">PPM</span><strong id="wpm">0</strong></div>
-        <div class="stat"><span class="label">PRECISÃO</span><strong id="accuracy">100%</strong></div>
+        <div class="stat">
+          <span class="label">PPM</span>
+          <strong id="wpm">0</strong>
+        </div>
+        <div class="stat">
+          <span class="label">PRECISÃO</span>
+          <strong id="accuracy">100%</strong>
+        </div>
       </section>
     </header>
 
     <aside class="status-bar">
-      <div class="lives" aria-label="Vidas"><span class="label">ESCUDO</span><div id="lives" class="life-icons"></div></div>
-      <div class="combo-wrap"><span class="label">COMBO</span><strong id="combo">x1</strong><div class="combo-track"><span id="comboFill"></span></div></div>
+      <div class="lives" aria-label="Vidas">
+        <span class="label">ESCUDO</span>
+        <div id="lives" class="life-icons"></div>
+      </div>
+      <div class="combo-wrap">
+        <span class="label">COMBO</span>
+        <strong id="combo">x1</strong>
+        <div class="combo-track"><span id="comboFill"></span></div>
+      </div>
       <button id="soundBtn" class="icon-button" type="button" aria-label="Ativar ou desativar som" title="Som">♪</button>
-      <button id="pauseBtn" class="icon-button" type="button" aria-label="Pausar jogo" title="Pausar (P)">Ⅱ</button>
+      <button id="pauseBtn" class="icon-button" type="button" aria-label="Pausar jogo" title="Pausar (Barra de espaço)">Ⅱ</button>
     </aside>
 
     <section id="startScreen" class="overlay visible">
@@ -50,7 +72,7 @@
         </div>
 
         <button id="startBtn" class="primary-button" type="button">INICIAR MISSÃO</button>
-        <p class="keyboard-tip">Comece digitando qualquer palavra • <kbd>P</kbd> pausa • <kbd>Esc</kbd> pausa</p>
+        <p class="keyboard-tip">Comece digitando qualquer palavra • <kbd>Espaço</kbd> pausa/continua</p>
         <p class="record">Recorde local: <strong id="bestScore">0</strong></p>
       </div>
     </section>
