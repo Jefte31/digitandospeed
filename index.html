@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050816" />
+  <meta name="description" content="Digitando Speed — jogo brasileiro de digitação espacial em português." />
+  <title>Digitando Speed</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main id="app" aria-label="Digitando Speed">
+    <canvas id="gameCanvas" aria-label="Área do jogo"></canvas>
+
+    <header class="hud" id="hud" aria-live="polite">
+      <section class="hud-group hud-left">
+        <div class="stat stat-score"><span class="label">PONTOS</span><strong id="score">0</strong></div>
+        <div class="stat"><span class="label">NÍVEL</span><strong id="level">1</strong></div>
+      </section>
+
+      <section class="brand" aria-label="Digitando Speed">
+        <span class="brand-mark">DS</span>
+        <div><strong>DIGITANDO</strong><span>SPEED</span></div>
+      </section>
+
+      <section class="hud-group hud-right">
+        <div class="stat"><span class="label">PPM</span><strong id="wpm">0</strong></div>
+        <div class="stat"><span class="label">PRECISÃO</span><strong id="accuracy">100%</strong></div>
+      </section>
+    </header>
+
+    <aside class="status-bar">
+      <div class="lives" aria-label="Vidas"><span class="label">ESCUDO</span><div id="lives" class="life-icons"></div></div>
+      <div class="combo-wrap"><span class="label">COMBO</span><strong id="combo">x1</strong><div class="combo-track"><span id="comboFill"></span></div></div>
+      <button id="soundBtn" class="icon-button" type="button" aria-label="Ativar ou desativar som" title="Som">♪</button>
+      <button id="pauseBtn" class="icon-button" type="button" aria-label="Pausar jogo" title="Pausar (P)">Ⅱ</button>
+    </aside>
+
+    <section id="startScreen" class="overlay visible">
+      <div class="panel hero-panel">
+        <div class="eyebrow">TREINE • ACELERE • DOMINE</div>
+        <h1>Digitando <span>Speed</span></h1>
+        <p class="lead">Destrua as ameaças digitando as palavras em português antes que elas alcancem sua nave.</p>
+
+        <div class="feature-grid">
+          <div><strong>PT-BR</strong><span>Vocabulário brasileiro</span></div>
+          <div><strong>∞</strong><span>Dificuldade progressiva</span></div>
+          <div><strong>PPM</strong><span>Velocidade em tempo real</span></div>
+          <div><strong>%</strong><span>Precisão e combo</span></div>
+        </div>
+
+        <button id="startBtn" class="primary-button" type="button">INICIAR MISSÃO</button>
+        <p class="keyboard-tip">Comece digitando qualquer palavra • <kbd>P</kbd> pausa • <kbd>Esc</kbd> pausa</p>
+        <p class="record">Recorde local: <strong id="bestScore">0</strong></p>
+      </div>
+    </section>
+
+    <section id="pauseScreen" class="overlay">
+      <div class="panel compact-panel">
+        <div class="eyebrow">MISSÃO SUSPENSA</div>
+        <h2>Jogo pausado</h2>
+        <p>Seu progresso está seguro.</p>
+        <button id="resumeBtn" class="primary-button" type="button">CONTINUAR</button>
+      </div>
+    </section>
+
+    <section id="gameOverScreen" class="overlay">
+      <div class="panel compact-panel">
+        <div class="eyebrow danger">MISSÃO ENCERRADA</div>
+        <h2>Fim de jogo</h2>
+        <div class="results">
+          <div><span>PONTUAÇÃO</span><strong id="finalScore">0</strong></div>
+          <div><span>PPM</span><strong id="finalWpm">0</strong></div>
+          <div><span>PRECISÃO</span><strong id="finalAccuracy">100%</strong></div>
+          <div><span>NÍVEL</span><strong id="finalLevel">1</strong></div>
+        </div>
+        <p id="newRecord" class="new-record" hidden>NOVO RECORDE!</p>
+        <button id="restartBtn" class="primary-button" type="button">JOGAR NOVAMENTE</button>
+      </div>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </main>
+
+  <script src="words.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
