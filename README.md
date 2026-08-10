@@ -1,73 +1,49 @@
-# Digitando Speed 🚀⌨️
+# DIGITSPEED 🚀⌨️
 
-Jogo brasileiro de digitação espacial, inspirado no gênero de *typing shooters* e criado do zero para português do Brasil.
+Jogo de treino de digitação em estilo espacial, com modos de **palavras** e **teclado numérico (Numpad)**.
 
-## O que já funciona
+## Recursos atuais
 
-- Palavras em **português do Brasil**, incluindo acentos.
-- Seleção automática do inimigo pela primeira letra digitada.
-- Um disparo para cada tecla correta.
-- O alvo permanece travado até a palavra ser concluída.
-- Se houver erro, a mesma palavra volta ao início para ser redigitada.
-- `Backspace` reinicia manualmente a palavra selecionada.
-- Combo e multiplicador de pontuação.
-- Pontuação, nível, vidas/escudo e dificuldade progressiva.
-- Cálculo de **PPM (palavras por minuto)** e precisão.
-- Efeitos de partículas, lasers, estrelas e áudio gerado no navegador.
-- Pausa/continuação com a **barra de espaço**.
-- Recorde salvo no `localStorage` do navegador.
-- Sem bibliotecas ou dependências externas.
+- Treino de palavras em **Português, English, Français e Español**.
+- Banco próprio de palavras, bônus e frases de chefão para cada idioma.
+- Modo **Numpad** para treinamento com números de 0 a 9.
+- Dificuldades Fácil, Médio, Difícil e Extremo.
+- Chefões a cada 5 níveis e bônus especiais durante a partida.
+- Seleção do alvo pela primeira letra ou número, priorizando o inimigo mais próximo da base.
+- Campo de **Comandante da Missão**.
+- Ranking local por jogador, modalidade, dificuldade e nível.
+- Pontuação, precisão, PPM/WPM, combo e escudo.
+- Pausa com `Tab`.
+- Recordes e preferências salvos no `localStorage` do navegador.
 
 ## Rodar no Google Cloud Shell
 
 ```bash
 git clone https://github.com/Jefte31/digitandospeed.git
 cd digitandospeed
-python3 -m http.server 8080
+python3 -m http.server 8080 --bind 0.0.0.0
 ```
 
-Depois, no Cloud Shell, use **Web Preview → Preview on port 8080**.
+Depois use **Web Preview → Preview on port 8080**.
 
-Também é possível executar localmente em qualquer computador com Python 3:
-
-```bash
-python3 -m http.server 8080
-```
-
-E abrir `http://localhost:8080` no navegador.
-
-## Estrutura
+## Estrutura principal
 
 ```text
 digitandospeed/
-├── index.html   # interface e HUD
-├── styles.css   # identidade visual e telas
-├── words.js     # banco de palavras PT-BR
-├── game.js      # motor do jogo
+├── index.html
+├── numpad.html
+├── styles.css
+├── difficulty.css
+├── i18n.css
+├── words.js
+├── language-bootstrap.js
+├── i18n.js
+├── game.js
+├── numpad.js
+├── ranking.js
 └── README.md
 ```
 
-## Como jogar
-
-1. Clique em **Iniciar missão**.
-2. Digite a primeira letra de uma das palavras que estiverem descendo.
-3. O jogo trava naquele alvo até a palavra ser concluída.
-4. Cada tecla correta dispara um laser.
-5. Se errar uma letra, o alvo permanece selecionado e a palavra volta ao início para ser redigitada; `Backspace` também reinicia manualmente a palavra. Inimigos que alcançam a nave retiram um ponto de escudo.
-
-## Próximos passos sugeridos
-
-- modos Fácil, Normal, Difícil e Insano;
-- chefes e inimigos especiais;
-- power-ups;
-- ranking online;
-- login e perfil;
-- conquistas;
-- banco de palavras por tema;
-- modo infantil e modo acentuação;
-- desafios diários;
-- versão instalável como PWA.
-
 ---
 
-**Digitando Speed** — protótipo inicial em HTML5 Canvas, CSS e JavaScript puro.
+**DIGITSPEED** — treino de velocidade, precisão e domínio do teclado.
