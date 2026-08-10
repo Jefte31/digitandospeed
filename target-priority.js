@@ -18,4 +18,17 @@
 
     return nativeSort.call(this, compareFn);
   };
+
+  if (!document.querySelector('link[href="ranking.css"]')) {
+    const style = document.createElement("link");
+    style.rel = "stylesheet";
+    style.href = "ranking.css";
+    document.head.appendChild(style);
+  }
+
+  if (!document.querySelector('script[src="ranking.js"]')) {
+    const script = document.createElement("script");
+    script.src = "ranking.js";
+    document.body.appendChild(script);
+  }
 })();
