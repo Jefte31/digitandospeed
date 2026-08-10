@@ -1,6 +1,6 @@
 // Banco ampliado de palavras em português do Brasil.
 // Inclui A-Z (com K, W e Y em empréstimos de uso corrente), cedilha e os acentos usuais do português.
-// A lista bonus alimenta as palavras douradas de maior complexidade.
+// A lista bonus alimenta as palavras douradas e a lista boss alimenta os chefões em forma de frase.
 window.DIGITANDO_WORDS = {
   easy: [
     "asa", "ave", "azul", "bola", "bom", "café", "céu", "chuva",
@@ -53,5 +53,27 @@ window.DIGITANDO_WORDS = {
     "anticonstitucionalmente", "desproporcionalidade", "impermeabilização", "descaracterização", "profissionalização", "institucionalização", "responsabilização", "incompreensibilidade",
     "representatividade", "sustentabilidade", "compatibilização", "contextualização", "descentralização", "hipersensibilidade", "microprocessamento", "eletromagnetismo",
     "circunstancialmente", "contemporaneidade", "interdependência", "transdisciplinaridade", "extraordinário", "aperfeiçoamento"
+  ],
+  boss: [
+    "velocidade e precisão vencem qualquer desafio",
+    "cada tecla correta aproxima você da vitória",
+    "concentração transforma prática em habilidade",
+    "quem domina o teclado controla a missão",
+    "o conhecimento abre caminhos para o futuro",
+    "persistência e atenção constroem grandes resultados",
+    "tecnologia e criatividade movem o mundo",
+    "pratique com calma para ganhar velocidade",
+    "uma mente focada supera qualquer obstáculo",
+    "a experiência cresce a cada nova tentativa",
+    "disciplina e constância fortalecem a aprendizagem",
+    "digitar com precisão é melhor que correr sem controle",
+    "a prática diária transforma esforço em excelência",
+    "atenção aos detalhes faz toda a diferença",
+    "desafios maiores revelam habilidades extraordinárias",
+    "conhecimento criatividade e coragem mudam destinos",
+    "o próximo nível começa com uma tecla correta",
+    "confiança nasce quando prática encontra persistência",
+    "uma decisão rápida exige atenção e precisão",
+    "cada erro corrigido também faz parte da evolução"
   ]
 };
