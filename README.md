@@ -7,11 +7,14 @@ Jogo brasileiro de digitação espacial, inspirado no gênero de *typing shooter
 - Palavras em **português do Brasil**, incluindo acentos.
 - Seleção automática do inimigo pela primeira letra digitada.
 - Um disparo para cada tecla correta.
+- O alvo permanece travado até a palavra ser concluída.
+- Se houver erro, a mesma palavra volta ao início para ser redigitada.
+- `Backspace` reinicia manualmente a palavra selecionada.
 - Combo e multiplicador de pontuação.
 - Pontuação, nível, vidas/escudo e dificuldade progressiva.
 - Cálculo de **PPM (palavras por minuto)** e precisão.
 - Efeitos de partículas, lasers, estrelas e áudio gerado no navegador.
-- Pausa/continua com a `barra de espaço`.
+- Pausa/continuação com a **barra de espaço**.
 - Recorde salvo no `localStorage` do navegador.
 - Sem bibliotecas ou dependências externas.
 
@@ -50,9 +53,7 @@ digitandospeed/
 2. Digite a primeira letra de uma das palavras que estiverem descendo.
 3. O jogo trava naquele alvo até a palavra ser concluída.
 4. Cada tecla correta dispara um laser.
-5. Se errar uma letra, o alvo e o progresso permanecem na mesma palavra; digite a letra correta para continuar.
-6. Erros quebram o combo; inimigos que alcançam a nave retiram um ponto de escudo.
-7. Use a **barra de espaço** para pausar ou continuar.
+5. Se errar uma letra, o alvo permanece selecionado e a palavra volta ao início para ser redigitada; `Backspace` também reinicia manualmente a palavra. Inimigos que alcançam a nave retiram um ponto de escudo.
 
 ## Próximos passos sugeridos
 
