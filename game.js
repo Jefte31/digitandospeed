@@ -26,7 +26,7 @@
   const difficultyKey = "digitandoSpeedDifficulty";
 
   const DIFFICULTIES = {
-    easy:    { label: "Fácil",   speed: 0.60, spawn: 1.65, minSpawn: 1.45, levelStep: 15, wordBias: -4 },
+    easy:    { label: "Fácil",   speed: 0.52, spawn: 1.65, minSpawn: 1.85, levelStep: 20, wordBias: -6 },
     medium:  { label: "Médio",   speed: 1.00, spawn: 1.00, minSpawn: 0.72, levelStep: 7,  wordBias: 0 },
     hard:    { label: "Difícil", speed: 1.22, spawn: 0.82, minSpawn: 0.58, levelStep: 6,  wordBias: 2 },
     extreme: { label: "Extremo", speed: 1.48, spawn: 0.64, minSpawn: 0.43, levelStep: 5,  wordBias: 5 }
@@ -73,6 +73,7 @@
   const makeId = () => (globalThis.crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
   const isCombo2 = () => state.elapsed < state.combo2Until;
   const isSlow = () => state.elapsed < state.slowUntil;
+  const isEasy = () => state.difficulty === "easy";
   ui.bestScore.textContent = formatNumber(getBest());
 
   function focusTypingInput() {
@@ -203,6 +204,13 @@
   }
 
   function wordPoolForLevel(level) {
+    if (isEasy()) {
+      if (level <= 5) return [...WORDS.easy];
+      if (level <= 10) return [...WORDS.easy, ...WORDS.medium.slice(0, 25)];
+      if (level <= 15) return [...WORDS.easy, ...WORDS.medium];
+      return [...WORDS.medium, ...WORDS.hard.slice(0, 18)];
+    }
+
     const effective = Math.max(1, level + difficulty().wordBias);
     if (effective <= 2) return [...WORDS.easy, ...WORDS.medium.slice(0, 12)];
     if (effective <= 5) return [...WORDS.easy, ...WORDS.medium];
@@ -227,7 +235,8 @@
   }
 
   function chooseBonusWord() {
-    const pool = WORDS.bonus?.length ? WORDS.bonus : WORDS.expert;
+    let pool = WORDS.bonus?.length ? WORDS.bonus : WORDS.expert;
+    if (isEasy()) pool = [...pool].sort((a, b) => a.length - b.length).slice(0, 12);
     const usedInitials = new Set(enemies.map((e) => wordInitial(e.word)));
     const unused = pool.filter((word) => !usedInitials.has(wordInitial(word)));
     const candidates = unused.length ? unused : pool;
@@ -235,16 +244,20 @@
   }
 
   function chooseBossPhrase() {
-    const pool = WORDS.boss?.length ? WORDS.boss : ["concentração e velocidade conduzem à vitória"];
+    let pool = WORDS.boss?.length ? WORDS.boss : ["concentração e velocidade conduzem à vitória"];
+    if (isEasy()) pool = [...pool].sort((a, b) => a.length - b.length).slice(0, 6);
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
   function spawnEnemy() {
     if (width < 1 || height < 1 || enemies.some((e) => e.kind === "boss")) return;
+    if (isEasy() && enemies.filter((e) => e.kind === "normal").length >= 3) return;
+
     const word = chooseWord();
     const margin = Math.min(145, Math.max(70, width * 0.1));
     const x = margin + Math.random() * Math.max(1, width - margin * 2);
-    const baseSpeed = (18 + state.level * 2.35) * difficulty().speed;
+    const levelGrowth = isEasy() ? 0.8 : 2.35;
+    const baseSpeed = (18 + state.level * levelGrowth) * difficulty().speed;
     enemies.push({
       id: makeId(), kind: "normal", word, typed: 0, x, y: -40,
       speed: baseSpeed * (0.82 + Math.random() * 0.34),
@@ -260,10 +273,11 @@
     const bonusType = BONUS_TYPES[Math.floor(Math.random() * BONUS_TYPES.length)];
     const margin = Math.min(190, Math.max(100, width * 0.16));
     const x = margin + Math.random() * Math.max(1, width - margin * 2);
-    const baseSpeed = (18 + state.level * 2.1) * difficulty().speed;
+    const levelGrowth = isEasy() ? 0.8 : 2.1;
+    const baseSpeed = (18 + state.level * levelGrowth) * difficulty().speed;
     enemies.push({
       id: makeId(), kind: "bonus", bonusType, word, typed: 0, x, y: -58,
-      speed: baseSpeed * 0.68,
+      speed: baseSpeed * (isEasy() ? 0.5 : 0.68),
       radius: 27 + Math.min(word.length, 22) * 0.32,
       phase: Math.random() * TAU, rot: Math.random() * TAU,
       rotSpeed: (Math.random() - 0.5) * 0.28, pulse: 0, hit: 0
@@ -277,10 +291,11 @@
   function spawnBoss() {
     if (enemies.some((e) => e.kind !== "normal")) return false;
     const phrase = chooseBossPhrase();
-    const baseSpeed = (18 + state.level * 1.75) * difficulty().speed;
+    const levelGrowth = isEasy() ? 0.65 : 1.75;
+    const baseSpeed = (18 + state.level * levelGrowth) * difficulty().speed;
     enemies.push({
       id: makeId(), kind: "boss", word: phrase, typed: 0,
-      x: width / 2, y: -82, speed: baseSpeed * 0.52,
+      x: width / 2, y: -82, speed: baseSpeed * (isEasy() ? 0.34 : 0.52),
       radius: Math.min(52, 39 + phrase.length * 0.18),
       phase: Math.random() * TAU, rot: 0, rotSpeed: 0.08,
       pulse: 0, hit: 0, bossLevel: state.nextBossLevel
@@ -302,6 +317,7 @@
   }
 
   function spawnInterval() {
+    if (isEasy()) return Math.max(1.85, 2.95 - state.level * 0.04);
     const d = difficulty();
     return Math.max(d.minSpawn, (2.25 - state.level * 0.105) * d.spawn);
   }
