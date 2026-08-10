@@ -297,7 +297,9 @@
 
     const target = state.target;
     if (target) {
-      const expected = [...target.word][target.typed]?.toLocaleLowerCase("pt-BR");
+      const letters = [...target.word];
+      const expected = letters[target.typed]?.toLocaleLowerCase("pt-BR");
+
       if (key === expected) {
         target.typed += 1;
         state.correctChars += 1;
@@ -306,15 +308,31 @@
         state.score += 6 * getMultiplier();
         fireLaser(target);
 
-        if (target.typed >= [...target.word].length) destroyEnemy(target);
+        if (target.typed >= letters.length) destroyEnemy(target);
         updateHud();
         return;
       }
+
+      // Errou uma letra: mantém o MESMO alvo, mas reinicia a palavra.
+      // Se a tecla errada já for a primeira letra da palavra, ela vira
+      // imediatamente o primeiro caractere da nova tentativa.
+      state.streak = 0;
+      target.typed = 0;
+      const firstLetter = letters[0]?.toLocaleLowerCase("pt-BR");
+      if (key === firstLetter) {
+        target.typed = 1;
+        state.correctChars += 1;
+        fireLaser(target);
+      }
+      state.shake = Math.max(state.shake, 2.5);
+      showToast("ERRO — REDIGITE A PALAVRA");
+      sfx("error");
+      updateHud();
+      return;
     }
 
+    // Nenhuma palavra começa com a tecla digitada.
     state.streak = 0;
-    // Mantém o alvo travado e o progresso da palavra após um erro.
-    // O jogador precisa redigitar a letra esperada antes de avançar.
     state.shake = Math.max(state.shake, 2.5);
     sfx("error");
     updateHud();
@@ -656,6 +674,14 @@
       return;
     }
     if (event.ctrlKey || event.metaKey || event.altKey) return;
+    if (event.key === "Backspace" && state.mode === "playing" && state.target) {
+      event.preventDefault();
+      state.target.typed = 0;
+      state.streak = 0;
+      showToast("PALAVRA REINICIADA");
+      updateHud();
+      return;
+    }
     if (event.key.length === 1) {
       event.preventDefault();
       processKey(event.key);
