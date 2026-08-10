@@ -1,0 +1,106 @@
+name: Adaptar DIGITSPEED para mobile
+
+on:
+  push:
+    paths:
+      - '.github/workflows/mobile-viewport-update.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ajustar viewport e carregamento mobile
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: trecho esperado encontrado {count} vez(es)')
+              p.write_text(text.replace(old, new), encoding='utf-8')
+
+          # HTML: estilos e controle mobile antes do motor do jogo.
+          replace_once('index.html',
+              '  <link rel="stylesheet" href="i18n.css" />',
+              '  <link rel="stylesheet" href="i18n.css" />\n  <link rel="stylesheet" href="mobile.css" />')
+          replace_once('index.html',
+              '  <script src="i18n.js"></script>\n  <script src="game.js"></script>',
+              '  <script src="i18n.js"></script>\n  <script src="mobile-controls.js"></script>\n  <script src="game.js"></script>')
+
+          replace_once('numpad.html',
+              '  <link rel="stylesheet" href="i18n.css" />',
+              '  <link rel="stylesheet" href="i18n.css" />\n  <link rel="stylesheet" href="mobile.css" />')
+          replace_once('numpad.html',
+              '  <script src="i18n.js"></script>\n  <script src="numpad.js"></script>',
+              '  <script src="i18n.js"></script>\n  <script src="mobile-controls.js"></script>\n  <script src="numpad.js"></script>')
+
+          # PALAVRAS: usar o VisualViewport real quando disponível.
+          old_resize = '''  function resize() {
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = Math.round(width * dpr);
+            canvas.height = Math.round(height * dpr);
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            createStars();
+          }'''
+          new_resize = '''  function resize() {
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const viewport = window.DS_getGameViewport ? window.DS_getGameViewport() : { width: window.innerWidth, height: window.innerHeight };
+            width = viewport.width;
+            height = viewport.height;
+            document.documentElement.style.setProperty("--ds-game-width", `${width}px`);
+            document.documentElement.style.setProperty("--ds-game-height", `${height}px`);
+            canvas.width = Math.round(width * dpr);
+            canvas.height = Math.round(height * dpr);
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            createStars();
+          }'''
+          replace_once('game.js', old_resize, new_resize)
+          replace_once('game.js',
+              '  window.addEventListener("blur", () => { if (state.mode === "playing") togglePause(true); });\n  window.addEventListener("resize", resize);',
+              '  window.addEventListener("blur", () => {\n    const mobileKeyboardOpen = window.DS_MOBILE && document.documentElement.classList.contains("ds-keyboard-open");\n    if (state.mode === "playing" && !mobileKeyboardOpen) togglePause(true);\n  });\n  window.addEventListener("resize", resize);\n  window.addEventListener("dsviewportchange", resize);')
+
+          # NUMPAD: mesma área útil acima do teclado virtual.
+          old_num_resize = 'function resize(){dpr=Math.min(devicePixelRatio||1,2);w=innerWidth;h=innerHeight;c.width=Math.round(w*dpr);c.height=Math.round(h*dpr);c.style.width=w+"px";c.style.height=h+"px";x.setTransform(dpr,0,0,dpr,0,0);stars=Array.from({length:Math.max(90,Math.floor(w*h/9000))},()=>({x:Math.random()*w,y:Math.random()*h,z:Math.random()*1.7+.25,v:Math.random()*14+5,a:Math.random()*.65+.18,l:Math.random()}))}'
+          new_num_resize = 'function resize(){dpr=Math.min(devicePixelRatio||1,2);let vp=window.DS_getGameViewport?window.DS_getGameViewport():{width:innerWidth,height:innerHeight};w=vp.width;h=vp.height;document.documentElement.style.setProperty("--ds-game-width",w+"px");document.documentElement.style.setProperty("--ds-game-height",h+"px");c.width=Math.round(w*dpr);c.height=Math.round(h*dpr);c.style.width=w+"px";c.style.height=h+"px";x.setTransform(dpr,0,0,dpr,0,0);stars=Array.from({length:Math.max(90,Math.floor(w*h/9000))},()=>({x:Math.random()*w,y:Math.random()*h,z:Math.random()*1.7+.25,v:Math.random()*14+5,a:Math.random()*.65+.18,l:Math.random()}))}'
+          replace_once('numpad.js', old_num_resize, new_num_resize)
+          replace_once('numpad.js',
+              'addEventListener("blur",()=>{if(s.mode==="playing")pause(true)});addEventListener("resize",resize);',
+              'addEventListener("blur",()=>{let kb=window.DS_MOBILE&&document.documentElement.classList.contains("ds-keyboard-open");if(s.mode==="playing"&&!kb)pause(true)});addEventListener("resize",resize);addEventListener("dsviewportchange",resize);')
+
+          # Permitir áreas muito baixas em celular na horizontal sem cobrir a nave.
+          p = Path('mobile-controls.js')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace('height: Math.max(260, height)', 'height: Math.max(160, height)')
+          p.write_text(text, encoding='utf-8')
+
+      - name: Validar JavaScript
+        run: |
+          node --check mobile-controls.js
+          node --check game.js
+          node --check numpad.js
+          grep -q 'mobile-controls.js' index.html
+          grep -q 'mobile-controls.js' numpad.html
+          grep -q 'mobile.css' index.html
+          grep -q 'mobile.css' numpad.html
+
+      - name: Publicar atualização mobile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html numpad.html game.js numpad.js mobile-controls.js
+          git commit -m "Adapta jogo ao teclado virtual em celular e tablet"
+          git push
