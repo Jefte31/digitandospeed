@@ -1,0 +1,97 @@
+.ds-mobile-keyboard-input {
+  position: fixed;
+  z-index: -1;
+  top: 2px;
+  left: 2px;
+  width: 2px;
+  height: 2px;
+  padding: 0;
+  border: 0;
+  opacity: .01;
+  pointer-events: none;
+  font-size: 16px;
+  caret-color: transparent;
+}
+
+.mobile-keyboard-button { display: none; }
+
+html.ds-touch,
+html.ds-touch body {
+  width: 100%;
+  height: var(--ds-game-height, 100dvh);
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html.ds-touch #app {
+  width: var(--ds-game-width, 100vw);
+  height: var(--ds-game-height, 100dvh);
+  min-height: 0 !important;
+}
+
+html.ds-touch .mobile-keyboard-button {
+  display: flex;
+  width: auto;
+  min-width: 92px;
+  padding: 0 10px;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+}
+
+html.ds-touch .mobile-keyboard-button strong {
+  font-size: 9px;
+  letter-spacing: .08em;
+}
+
+html.ds-touch .mobile-keyboard-button.active {
+  color: #67e8f9;
+  border-color: rgba(103,232,249,.5);
+  background: rgba(103,232,249,.12);
+}
+
+html.ds-touch.ds-keyboard-open .status-bar {
+  bottom: max(7px, env(safe-area-inset-bottom));
+}
+
+@media (max-width: 720px) {
+  html.ds-touch .status-bar {
+    width: calc(100% - 12px);
+    gap: 7px;
+    padding: 7px 8px;
+    border-radius: 13px;
+  }
+
+  html.ds-touch .status-bar .training-pill,
+  html.ds-touch .status-bar .difficulty-pill {
+    display: none;
+  }
+
+  html.ds-touch .lives { min-width: 74px; }
+  html.ds-touch .combo-wrap { width: 78px; }
+  html.ds-touch .icon-button { width: 34px; height: 34px; }
+
+  html.ds-touch .mobile-keyboard-button {
+    min-width: 38px;
+    padding: 0 8px;
+  }
+
+  html.ds-touch .mobile-keyboard-button strong { display: none; }
+
+  html.ds-touch.ds-keyboard-open .hud {
+    height: 68px;
+    padding-top: 10px;
+    padding-bottom: 8px;
+  }
+
+  html.ds-touch.ds-keyboard-open .stat strong { font-size: 17px; }
+  html.ds-touch.ds-keyboard-open .toast { top: 78px; }
+}
+
+@media (min-width: 721px) and (max-width: 1180px) {
+  html.ds-touch.ds-keyboard-open .status-bar {
+    padding: 8px 10px 8px 14px;
+    gap: 9px;
+  }
+}
