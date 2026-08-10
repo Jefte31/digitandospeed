@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#050816" />
-  <meta name="description" content="Digitando Speed Numpad — treino do teclado numérico." />
-  <title>Digitando Speed • Numpad</title>
+  <meta name="description" content="DIGITSPEED Numpad — treino do teclado numérico." />
+  <title>DIGITSPEED • Numpad</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="difficulty.css" />
   <link rel="stylesheet" href="i18n.css" />
 </head>
 <body>
-  <main id="app" aria-label="Digitando Speed Numpad">
+  <main id="app" aria-label="DIGITSPEED Numpad">
     <canvas id="gameCanvas" aria-label="Área do jogo numérico"></canvas>
 
     <header class="hud" id="hud" aria-live="polite">
@@ -19,9 +19,9 @@
         <div class="stat stat-score"><span class="label">PONTOS</span><strong id="score">0</strong></div>
         <div class="stat"><span class="label">NÍVEL</span><strong id="level">1</strong></div>
       </section>
-      <section class="brand" aria-label="Digitando Speed">
+      <section class="brand" aria-label="DIGITSPEED">
         <span class="brand-mark">DS</span>
-        <div><strong>DIGITANDO</strong><span>NUMPAD</span></div>
+        <div><strong>DIGIT</strong><span>SPEED</span></div>
       </section>
       <section class="hud-group hud-right">
         <div class="stat"><span class="label">PPM</span><strong id="wpm">0</strong></div>
@@ -41,7 +41,7 @@
     <section id="startScreen" class="overlay visible">
       <div class="panel hero-panel">
         <div class="eyebrow">TREINO DO TECLADO NUMÉRICO</div>
-        <h1>Digitando <span>Numpad</span></h1>
+        <h1>DIGIT<span>SPEED</span></h1>
         <p class="lead">Destrua as sequências usando apenas os números de 0 a 9 antes que elas alcancem sua nave.</p>
 
         <div class="feature-grid">
@@ -104,8 +104,9 @@
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </main>
+  <script src="language-bootstrap.js"></script>
+  <script src="i18n.js"></script>
   <script src="numpad.js"></script>
   <script src="target-priority.js"></script>
-  <script src="i18n.js"></script>
 </body>
 </html>
