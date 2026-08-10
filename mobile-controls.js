@@ -22,6 +22,18 @@
 
   document.documentElement.classList.add("ds-touch");
 
+  const originalInnerHeight = window.innerHeight;
+  let canShadowInnerHeight = false;
+  try {
+    Object.defineProperty(window, "innerHeight", {
+      configurable: true,
+      get() {
+        return Math.round(window.visualViewport?.height || originalInnerHeight);
+      }
+    });
+    canShadowInnerHeight = true;
+  } catch (_) {}
+
   const nativeFocus = HTMLInputElement.prototype.focus;
   HTMLInputElement.prototype.focus = function (...args) {
     if (this.getAttribute("aria-hidden") === "true" && this.id !== "dsMobileKeyboardInput") return;
@@ -55,8 +67,8 @@
   function viewport() {
     const vv = window.visualViewport;
     const width = Math.round(vv?.width || window.innerWidth);
-    const height = Math.round(vv?.height || window.innerHeight);
-    return { width: Math.max(280, width), height: Math.max(260, height) };
+    const height = Math.round(vv?.height || originalInnerHeight);
+    return { width: Math.max(280, width), height: Math.max(160, height) };
   }
 
   window.DS_getGameViewport = viewport;
@@ -67,10 +79,12 @@
     const size = viewport();
     document.documentElement.style.setProperty("--ds-game-width", `${size.width}px`);
     document.documentElement.style.setProperty("--ds-game-height", `${size.height}px`);
+
     if (size.width !== lastW || size.height !== lastH) {
       lastW = size.width;
       lastH = size.height;
-      window.dispatchEvent(new Event("dsviewportchange"));
+      if (canShadowInnerHeight) window.dispatchEvent(new Event("resize"));
+      else window.dispatchEvent(new Event("dsviewportchange"));
     }
   }
 
