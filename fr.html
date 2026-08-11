@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="theme-color" content="#050816" />
+  <title>DIGITSPEED | Apprenez à taper plus vite en jouant</title>
+  <meta name="description" content="Apprenez à taper plus vite en vous amusant avec DIGITSPEED. Entraînez la dactylographie, la vitesse, la précision, les mots, les phrases et le pavé numérique." />
+  <meta name="keywords" content="apprendre à taper, taper plus vite, dactylographie, jeu de dactylographie, entraînement clavier, vitesse de frappe, précision de frappe, pavé numérique" />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <link rel="canonical" href="https://jefte31.github.io/digitandospeed/fr.html" />
+  <link rel="alternate" hreflang="pt-BR" href="https://jefte31.github.io/digitandospeed/" />
+  <link rel="alternate" hreflang="en" href="https://jefte31.github.io/digitandospeed/en.html" />
+  <link rel="alternate" hreflang="fr" href="https://jefte31.github.io/digitandospeed/fr.html" />
+  <link rel="alternate" hreflang="es" href="https://jefte31.github.io/digitandospeed/es.html" />
+  <link rel="alternate" hreflang="x-default" href="https://jefte31.github.io/digitandospeed/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="DIGITSPEED" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:title" content="DIGITSPEED | Apprenez à taper plus vite en jouant" />
+  <meta property="og:description" content="Entraînez votre vitesse et votre précision de frappe en vous amusant avec des mots, des phrases et le pavé numérique." />
+  <meta property="og:url" content="https://jefte31.github.io/digitandospeed/fr.html" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="DIGITSPEED | Apprenez à taper plus vite" />
+  <meta name="twitter:description" content="Un jeu gratuit pour entraîner la dactylographie, la vitesse, la précision et le pavé numérique." />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"DIGITSPEED","url":"https://jefte31.github.io/digitandospeed/fr.html","applicationCategory":"GameApplication","operatingSystem":"Web browser","inLanguage":"fr","isAccessibleForFree":true,"description":"Jeu gratuit de dactylographie pour apprendre à taper plus vite et entraîner la vitesse, la précision, les mots, les phrases et le pavé numérique."}</script>
+  <script>localStorage.setItem("digitandoSpeedLanguage","fr");</script>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="difficulty.css" />
+  <link rel="stylesheet" href="i18n.css" />
+  <link rel="stylesheet" href="mobile.css" />
+</head>
+<body>
+  <main id="app" aria-label="DIGITSPEED">
+    <canvas id="gameCanvas" aria-label="Zone du jeu de dactylographie"></canvas>
+    <header class="hud" id="hud" aria-live="polite">
+      <section class="hud-group hud-left"><div class="stat stat-score"><span class="label">POINTS</span><strong id="score">0</strong></div><div class="stat"><span class="label">NIVEAU</span><strong id="level">1</strong></div></section>
+      <section class="brand" aria-label="DIGITSPEED"><span class="brand-mark">DS</span><div><strong>DIGIT</strong><span>SPEED</span></div></section>
+      <section class="hud-group hud-right"><div class="stat"><span class="label">MPM</span><strong id="wpm">0</strong></div><div class="stat"><span class="label">PRÉCISION</span><strong id="accuracy">100%</strong></div></section>
+    </header>
+    <aside class="status-bar"><div class="lives" aria-label="Vies"><span class="label">BOUCLIER</span><div id="lives" class="life-icons"></div></div><div class="combo-wrap"><span class="label">COMBO</span><strong id="combo">x1</strong><div class="combo-track"><span id="comboFill"></span></div></div><div class="training-pill"><span class="label">ENTRAÎNEMENT</span><strong id="currentTraining">Mots</strong></div><div class="difficulty-pill"><span class="label">MODE</span><strong id="currentDifficulty">Moyen</strong></div><button id="soundBtn" class="icon-button" type="button" aria-label="Activer ou désactiver le son" title="Son">♪</button><button id="pauseBtn" class="icon-button" type="button" aria-label="Mettre le jeu en pause" title="Pause (Tab)">Ⅱ</button></aside>
+    <section id="startScreen" class="overlay visible"><div class="panel hero-panel">
+      <div class="eyebrow">ENTRAÎNEZ • ACCÉLÉREZ • MAÎTRISEZ</div><h1>DIGIT<span>SPEED</span></h1>
+      <p class="lead">Apprenez à taper plus vite en vous amusant. Entraînez votre vitesse de frappe, votre précision, les mots et les phrases avant que les menaces n'atteignent votre vaisseau.</p>
+      <div class="feature-grid"><div><strong>FR</strong><span>Vocabulaire français</span></div><div><strong>∞</strong><span>Difficulté progressive</span></div><div><strong>MPM</strong><span>Vitesse de frappe en temps réel</span></div><div><strong>%</strong><span>Précision et combo</span></div></div>
+      <div class="training-picker"><p class="difficulty-title">CHOISISSEZ LE TYPE D'ENTRAÎNEMENT</p><div class="training-options" role="radiogroup" aria-label="Type d'entraînement"><button class="training-btn active" type="button" aria-pressed="true"><strong>MOTS</strong><span>Lettres, accents et phrases</span></button><button class="training-btn" type="button" aria-pressed="false" onclick="window.location.href='numpad.html'"><strong>PAVÉ NUM.</strong><span>Pavé numérique 0–9</span></button></div></div>
+      <div class="difficulty-picker"><p class="difficulty-title">CHOISISSEZ LA DIFFICULTÉ</p><div class="difficulty-options" role="radiogroup" aria-label="Difficulté du jeu"><button class="difficulty-btn" data-difficulty="easy" type="button" aria-pressed="false"><strong>Facile</strong><span>Plus de temps pour taper</span></button><button class="difficulty-btn active" data-difficulty="medium" type="button" aria-pressed="true"><strong>Moyen</strong><span>Expérience standard</span></button><button class="difficulty-btn" data-difficulty="hard" type="button" aria-pressed="false"><strong>Difficile</strong><span>Plus rapide et intense</span></button><button class="difficulty-btn" data-difficulty="extreme" type="button" aria-pressed="false"><strong>Extrême</strong><span>Pour les dactylos rapides</span></button></div></div>
+      <button id="startBtn" class="primary-button" type="button">DÉMARRER LA MISSION</button><p class="keyboard-tip">Commencez à taper un mot • <kbd>Tab</kbd> pause/reprend • <kbd>Espace</kbd> fait partie des phrases • <kbd>Backspace</kbd> réinitialise la cible</p><p class="record">Record local : <strong id="bestScore">0</strong></p>
+    </div></section>
+    <section id="pauseScreen" class="overlay"><div class="panel compact-panel"><div class="eyebrow">MISSION EN PAUSE</div><h2>Jeu en pause</h2><p>Votre progression est sauvegardée.</p><div class="panel-actions"><button id="resumeBtn" class="primary-button" type="button">CONTINUER</button><button class="secondary-button" type="button" onclick="window.location.reload()">RETOUR AU MENU</button></div></div></section>
+    <section id="gameOverScreen" class="overlay"><div class="panel compact-panel"><div class="eyebrow danger">MISSION TERMINÉE</div><h2>Fin de partie</h2><div class="results"><div><span>SCORE</span><strong id="finalScore">0</strong></div><div><span>MPM</span><strong id="finalWpm">0</strong></div><div><span>PRÉCISION</span><strong id="finalAccuracy">100%</strong></div><div><span>NIVEAU</span><strong id="finalLevel">1</strong></div></div><p id="newRecord" class="new-record" hidden>NOUVEAU RECORD !</p><div class="panel-actions"><button id="restartBtn" class="primary-button" type="button">REJOUER</button><button class="secondary-button" type="button" onclick="window.location.reload()">RETOUR AU MENU</button></div></div></section>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </main>
+  <script src="words.js"></script><script src="language-bootstrap.js"></script><script src="i18n.js"></script><script src="seo-language-nav.js"></script><script src="mobile-controls.js"></script><script src="game.js"></script><script src="target-priority.js"></script>
+</body>
+</html>
