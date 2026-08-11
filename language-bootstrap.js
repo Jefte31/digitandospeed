@@ -25,7 +25,10 @@
   }
 
   const isNumpad = location.pathname.toLowerCase().includes("numpad");
-  document.title = isNumpad ? "DIGITSPEED • Numpad" : "DIGITSPEED";
+  // Páginas SEO usam títulos completos com "|". Não sobrescrever esses títulos.
+  if (!document.title.includes("|")) {
+    document.title = isNumpad ? "DIGITSPEED • Numpad" : "DIGITSPEED";
+  }
 
   const brand = document.querySelector(".brand div");
   if (brand) brand.innerHTML = "<strong>DIGIT</strong><span>SPEED</span>";
