@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="theme-color" content="#050816" />
+  <title>DIGITSPEED | Learn to Type Faster with a Typing Game</title>
+  <meta name="description" content="Learn to type faster while having fun with DIGITSPEED. Practice typing speed, accuracy, words, phrases and the numeric keypad for free." />
+  <meta name="keywords" content="learn to type, type faster, typing practice, typing game, typing speed, keyboard practice, touch typing, numeric keypad practice" />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <link rel="canonical" href="https://jefte31.github.io/digitandospeed/en.html" />
+  <link rel="alternate" hreflang="pt-BR" href="https://jefte31.github.io/digitandospeed/" />
+  <link rel="alternate" hreflang="en" href="https://jefte31.github.io/digitandospeed/en.html" />
+  <link rel="alternate" hreflang="fr" href="https://jefte31.github.io/digitandospeed/fr.html" />
+  <link rel="alternate" hreflang="es" href="https://jefte31.github.io/digitandospeed/es.html" />
+  <link rel="alternate" hreflang="x-default" href="https://jefte31.github.io/digitandospeed/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="DIGITSPEED" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="DIGITSPEED | Learn to Type Faster with a Typing Game" />
+  <meta property="og:description" content="Practice typing speed and accuracy while having fun with words, phrases and numeric keypad challenges." />
+  <meta property="og:url" content="https://jefte31.github.io/digitandospeed/en.html" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="DIGITSPEED | Learn to Type Faster" />
+  <meta name="twitter:description" content="A free typing game to practice speed, accuracy, words, phrases and the numeric keypad." />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"DIGITSPEED","url":"https://jefte31.github.io/digitandospeed/en.html","applicationCategory":"GameApplication","operatingSystem":"Web browser","inLanguage":"en","isAccessibleForFree":true,"description":"Free typing game to learn to type faster and practice typing speed, accuracy, words, phrases and the numeric keypad."}</script>
+  <script>localStorage.setItem("digitandoSpeedLanguage","en");</script>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="difficulty.css" />
+  <link rel="stylesheet" href="i18n.css" />
+  <link rel="stylesheet" href="mobile.css" />
+</head>
+<body>
+  <main id="app" aria-label="DIGITSPEED">
+    <canvas id="gameCanvas" aria-label="Typing game area"></canvas>
+    <header class="hud" id="hud" aria-live="polite">
+      <section class="hud-group hud-left"><div class="stat stat-score"><span class="label">POINTS</span><strong id="score">0</strong></div><div class="stat"><span class="label">LEVEL</span><strong id="level">1</strong></div></section>
+      <section class="brand" aria-label="DIGITSPEED"><span class="brand-mark">DS</span><div><strong>DIGIT</strong><span>SPEED</span></div></section>
+      <section class="hud-group hud-right"><div class="stat"><span class="label">WPM</span><strong id="wpm">0</strong></div><div class="stat"><span class="label">ACCURACY</span><strong id="accuracy">100%</strong></div></section>
+    </header>
+    <aside class="status-bar">
+      <div class="lives" aria-label="Lives"><span class="label">SHIELD</span><div id="lives" class="life-icons"></div></div>
+      <div class="combo-wrap"><span class="label">COMBO</span><strong id="combo">x1</strong><div class="combo-track"><span id="comboFill"></span></div></div>
+      <div class="training-pill"><span class="label">TRAINING</span><strong id="currentTraining">Words</strong></div>
+      <div class="difficulty-pill"><span class="label">MODE</span><strong id="currentDifficulty">Medium</strong></div>
+      <button id="soundBtn" class="icon-button" type="button" aria-label="Toggle sound" title="Sound">♪</button><button id="pauseBtn" class="icon-button" type="button" aria-label="Pause game" title="Pause (Tab)">Ⅱ</button>
+    </aside>
+    <section id="startScreen" class="overlay visible"><div class="panel hero-panel">
+      <div class="eyebrow">TRAIN • SPEED UP • MASTER</div><h1>DIGIT<span>SPEED</span></h1>
+      <p class="lead">Learn to type faster while having fun. Practice typing speed, accuracy, words and phrases before the threats reach your ship.</p>
+      <div class="feature-grid"><div><strong>EN</strong><span>English vocabulary</span></div><div><strong>∞</strong><span>Progressive difficulty</span></div><div><strong>WPM</strong><span>Real-time typing speed</span></div><div><strong>%</strong><span>Accuracy and combo</span></div></div>
+      <div class="training-picker"><p class="difficulty-title">CHOOSE TRAINING TYPE</p><div class="training-options" role="radiogroup" aria-label="Training type"><button class="training-btn active" type="button" aria-pressed="true"><strong>WORDS</strong><span>Letters, accents and phrases</span></button><button class="training-btn" type="button" aria-pressed="false" onclick="window.location.href='numpad.html'"><strong>NUMPAD</strong><span>Numeric keypad 0–9</span></button></div></div>
+      <div class="difficulty-picker"><p class="difficulty-title">CHOOSE DIFFICULTY</p><div class="difficulty-options" role="radiogroup" aria-label="Game difficulty"><button class="difficulty-btn" data-difficulty="easy" type="button" aria-pressed="false"><strong>Easy</strong><span>More time to type</span></button><button class="difficulty-btn active" data-difficulty="medium" type="button" aria-pressed="true"><strong>Medium</strong><span>Standard experience</span></button><button class="difficulty-btn" data-difficulty="hard" type="button" aria-pressed="false"><strong>Hard</strong><span>Faster and more intense</span></button><button class="difficulty-btn" data-difficulty="extreme" type="button" aria-pressed="false"><strong>Extreme</strong><span>For fast typists</span></button></div></div>
+      <button id="startBtn" class="primary-button" type="button">START MISSION</button><p class="keyboard-tip">Start typing any word • <kbd>Tab</kbd> pauses/resumes • <kbd>Space</kbd> is part of phrases • <kbd>Backspace</kbd> resets the target</p><p class="record">Local record: <strong id="bestScore">0</strong></p>
+    </div></section>
+    <section id="pauseScreen" class="overlay"><div class="panel compact-panel"><div class="eyebrow">MISSION PAUSED</div><h2>Game paused</h2><p>Your progress is safe.</p><div class="panel-actions"><button id="resumeBtn" class="primary-button" type="button">CONTINUE</button><button class="secondary-button" type="button" onclick="window.location.reload()">BACK TO MENU</button></div></div></section>
+    <section id="gameOverScreen" class="overlay"><div class="panel compact-panel"><div class="eyebrow danger">MISSION ENDED</div><h2>Game over</h2><div class="results"><div><span>SCORE</span><strong id="finalScore">0</strong></div><div><span>WPM</span><strong id="finalWpm">0</strong></div><div><span>ACCURACY</span><strong id="finalAccuracy">100%</strong></div><div><span>LEVEL</span><strong id="finalLevel">1</strong></div></div><p id="newRecord" class="new-record" hidden>NEW RECORD!</p><div class="panel-actions"><button id="restartBtn" class="primary-button" type="button">PLAY AGAIN</button><button class="secondary-button" type="button" onclick="window.location.reload()">BACK TO MENU</button></div></div></section>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </main>
+  <script src="words.js"></script><script src="language-bootstrap.js"></script><script src="i18n.js"></script><script src="seo-language-nav.js"></script><script src="mobile-controls.js"></script><script src="game.js"></script><script src="target-priority.js"></script>
+</body>
+</html>
