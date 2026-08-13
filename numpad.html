@@ -13,7 +13,7 @@
 </head>
 <body>
   <main id="app" aria-label="DIGITSPEED Numpad">
-    <canvas id="gameCanvas" aria-label="Área do jogo numérico"></canvas>
+    <canvas id="gameCanvas" aria-label="Área da missão numérica"></canvas>
 
     <header class="hud" id="hud" aria-live="polite">
       <section class="hud-group hud-left">
@@ -36,7 +36,7 @@
       <div class="training-pill"><span class="label">TREINO</span><strong>NUMPAD</strong></div>
       <div class="difficulty-pill"><span class="label">MODO</span><strong id="currentDifficulty">Médio</strong></div>
       <button id="soundBtn" class="icon-button" type="button" aria-label="Ativar ou desativar som" title="Som">♪</button>
-      <button id="pauseBtn" class="icon-button" type="button" aria-label="Pausar jogo" title="Pausar (Tab)">Ⅱ</button>
+      <button id="pauseBtn" class="icon-button" type="button" aria-label="Pausar missão" title="Pausar (Tab)">Ⅱ</button>
     </aside>
 
     <section id="startScreen" class="overlay visible">
@@ -62,7 +62,7 @@
 
         <div class="difficulty-picker">
           <p class="difficulty-title">ESCOLHA A DIFICULDADE</p>
-          <div class="difficulty-options" role="radiogroup" aria-label="Dificuldade do jogo">
+          <div class="difficulty-options" role="radiogroup" aria-label="Dificuldade da missão">
             <button class="difficulty-btn" data-difficulty="easy" type="button" aria-pressed="false"><strong>Fácil</strong><span>1–2 dígitos no início</span></button>
             <button class="difficulty-btn active" data-difficulty="medium" type="button" aria-pressed="true"><strong>Médio</strong><span>Sequências progressivas</span></button>
             <button class="difficulty-btn" data-difficulty="hard" type="button" aria-pressed="false"><strong>Difícil</strong><span>Sequências maiores</span></button>
@@ -78,7 +78,7 @@
 
     <section id="pauseScreen" class="overlay">
       <div class="panel compact-panel">
-        <div class="eyebrow">TREINO SUSPENSO</div><h2>Jogo pausado</h2><p>Seu progresso está seguro.</p>
+        <div class="eyebrow">TREINO SUSPENSO</div><h2>Missão pausada</h2><p>Seu progresso está seguro.</p>
         <div class="panel-actions">
           <button id="resumeBtn" class="primary-button" type="button">CONTINUAR</button>
           <button class="secondary-button" type="button" onclick="window.location.href='index.html'">VOLTAR AO MENU</button>
@@ -88,7 +88,7 @@
 
     <section id="gameOverScreen" class="overlay">
       <div class="panel compact-panel">
-        <div class="eyebrow danger">TREINO ENCERRADO</div><h2>Fim de jogo</h2>
+        <div class="eyebrow danger">TREINO ENCERRADO</div><h2>Fim da missão</h2>
         <div class="results">
           <div><span>PONTUAÇÃO</span><strong id="finalScore">0</strong></div>
           <div><span>PPM</span><strong id="finalWpm">0</strong></div>
@@ -97,7 +97,7 @@
         </div>
         <p id="newRecord" class="new-record" hidden>NOVO RECORDE NUMPAD!</p>
         <div class="panel-actions">
-          <button id="restartBtn" class="primary-button" type="button">JOGAR NOVAMENTE</button>
+          <button id="restartBtn" class="primary-button" type="button">NOVA MISSÃO</button>
           <button class="secondary-button" type="button" onclick="window.location.href='index.html'">VOLTAR AO MENU</button>
         </div>
       </div>

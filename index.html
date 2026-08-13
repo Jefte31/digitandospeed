@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <meta name="theme-color" content="#050816" />
-  <title>DIGITSPEED | Aprenda a digitar rápido jogando</title>
+  <title>DIGITSPEED | Aprenda a digitar rápido em missões</title>
   <meta name="description" content="Aprenda a digitar mais rápido se divertindo no DIGITSPEED. Treine digitação, precisão, palavras, acentos, frases e teclado numérico grátis." />
-  <meta name="keywords" content="aprender a digitar, digitar rápido, treino de digitação, jogo de digitação, digitação online, velocidade de digitação, teclado, teclado numérico" />
+  <meta name="keywords" content="aprender a digitar, digitar rápido, treino de digitação, treino de digitação, digitação online, velocidade de digitação, teclado, teclado numérico" />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <link rel="canonical" href="https://jefte31.github.io/digitandospeed/" />
   <link rel="alternate" hreflang="pt-BR" href="https://jefte31.github.io/digitandospeed/" />
@@ -17,14 +17,14 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="DIGITSPEED" />
   <meta property="og:locale" content="pt_BR" />
-  <meta property="og:title" content="DIGITSPEED | Aprenda a digitar rápido jogando" />
-  <meta property="og:description" content="Treine digitação, velocidade e precisão enquanto se diverte. Palavras, frases, acentos e teclado numérico em um jogo gratuito." />
+  <meta property="og:title" content="DIGITSPEED | Aprenda a digitar rápido em missões" />
+  <meta property="og:description" content="Treine digitação, velocidade e precisão enquanto se diverte. Palavras, frases, acentos e teclado numérico em uma missão interativa gratuita." />
   <meta property="og:url" content="https://jefte31.github.io/digitandospeed/" />
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="DIGITSPEED | Aprenda a digitar rápido jogando" />
+  <meta name="twitter:title" content="DIGITSPEED | Aprenda a digitar rápido em missões" />
   <meta name="twitter:description" content="Aprenda a digitar mais rápido se divertindo. Treine velocidade, precisão, palavras, frases e teclado numérico." />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebApplication","name":"DIGITSPEED","url":"https://jefte31.github.io/digitandospeed/","applicationCategory":"GameApplication","operatingSystem":"Web browser","inLanguage":"pt-BR","isAccessibleForFree":true,"description":"Jogo gratuito para aprender a digitar mais rápido, praticar velocidade, precisão, palavras, frases e teclado numérico."}
+  {"@context":"https://schema.org","@type":"WebApplication","name":"DIGITSPEED","url":"https://jefte31.github.io/digitandospeed/","applicationCategory":"EducationalApplication","operatingSystem":"Web browser","inLanguage":"pt-BR","isAccessibleForFree":true,"description":"Plataforma gratuita para aprender a digitar mais rápido, praticar velocidade, precisão, palavras, frases e teclado numérico."}
   </script>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="difficulty.css" />
@@ -33,7 +33,7 @@
 </head>
 <body>
   <main id="app" aria-label="DIGITSPEED">
-    <canvas id="gameCanvas" aria-label="Área do jogo"></canvas>
+    <canvas id="gameCanvas" aria-label="Área da missão"></canvas>
 
     <header class="hud" id="hud" aria-live="polite">
       <section class="hud-group hud-left">
@@ -58,7 +58,7 @@
       <div class="training-pill"><span class="label">TREINO</span><strong id="currentTraining">Palavras</strong></div>
       <div class="difficulty-pill"><span class="label">MODO</span><strong id="currentDifficulty">Médio</strong></div>
       <button id="soundBtn" class="icon-button" type="button" aria-label="Ativar ou desativar som" title="Som">♪</button>
-      <button id="pauseBtn" class="icon-button" type="button" aria-label="Pausar jogo" title="Pausar (Tab)">Ⅱ</button>
+      <button id="pauseBtn" class="icon-button" type="button" aria-label="Pausar missão" title="Pausar (Tab)">Ⅱ</button>
     </aside>
 
     <section id="startScreen" class="overlay visible">
@@ -88,7 +88,7 @@
 
         <div class="difficulty-picker">
           <p class="difficulty-title">ESCOLHA A DIFICULDADE</p>
-          <div class="difficulty-options" role="radiogroup" aria-label="Dificuldade do jogo">
+          <div class="difficulty-options" role="radiogroup" aria-label="Dificuldade da missão">
             <button class="difficulty-btn" data-difficulty="easy" type="button" aria-pressed="false"><strong>Fácil</strong><span>Mais tempo para digitar</span></button>
             <button class="difficulty-btn active" data-difficulty="medium" type="button" aria-pressed="true"><strong>Médio</strong><span>Experiência padrão</span></button>
             <button class="difficulty-btn" data-difficulty="hard" type="button" aria-pressed="false"><strong>Difícil</strong><span>Mais rápido e intenso</span></button>
@@ -104,7 +104,7 @@
 
     <section id="pauseScreen" class="overlay">
       <div class="panel compact-panel">
-        <div class="eyebrow">MISSÃO SUSPENSA</div><h2>Jogo pausado</h2><p>Seu progresso está seguro.</p>
+        <div class="eyebrow">MISSÃO SUSPENSA</div><h2>Missão pausada</h2><p>Seu progresso está seguro.</p>
         <div class="panel-actions">
           <button id="resumeBtn" class="primary-button" type="button">CONTINUAR</button>
           <button class="secondary-button" type="button" onclick="window.location.reload()">VOLTAR AO MENU</button>
@@ -114,7 +114,7 @@
 
     <section id="gameOverScreen" class="overlay">
       <div class="panel compact-panel">
-        <div class="eyebrow danger">MISSÃO ENCERRADA</div><h2>Fim de jogo</h2>
+        <div class="eyebrow danger">MISSÃO ENCERRADA</div><h2>Fim da missão</h2>
         <div class="results">
           <div><span>PONTUAÇÃO</span><strong id="finalScore">0</strong></div>
           <div><span>PPM</span><strong id="finalWpm">0</strong></div>
@@ -123,7 +123,7 @@
         </div>
         <p id="newRecord" class="new-record" hidden>NOVO RECORDE!</p>
         <div class="panel-actions">
-          <button id="restartBtn" class="primary-button" type="button">JOGAR NOVAMENTE</button>
+          <button id="restartBtn" class="primary-button" type="button">NOVA MISSÃO</button>
           <button class="secondary-button" type="button" onclick="window.location.reload()">VOLTAR AO MENU</button>
         </div>
       </div>
