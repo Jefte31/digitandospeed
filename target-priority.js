@@ -37,6 +37,13 @@
     document.head.appendChild(style);
   }
 
+  if (!document.querySelector('link[href="menu-footer-polish.css"]')) {
+    const style = document.createElement("link");
+    style.rel = "stylesheet";
+    style.href = "menu-footer-polish.css";
+    document.head.appendChild(style);
+  }
+
   if (!document.querySelector('script[src="ranking.js"]')) {
     const script = document.createElement("script");
     script.src = "ranking.js";
