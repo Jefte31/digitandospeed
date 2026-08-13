@@ -1,0 +1,35 @@
+#startScreen .keyboard-tip {
+  width: min(430px, 100%);
+  margin: 15px auto 0;
+  color: #60768a;
+  font-size: 9px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+#startScreen .keyboard-tip kbd {
+  margin: 0 2px;
+  padding: 2px 5px;
+  font-size: 8px;
+}
+
+#startScreen .record {
+  margin: 7px auto 0;
+  color: #71879a;
+  font-size: 9px;
+  letter-spacing: .03em;
+}
+
+#startScreen .record strong {
+  color: #a8bfce;
+}
+
+@media (max-width: 720px) {
+  #startScreen .keyboard-tip {
+    display: none;
+  }
+
+  #startScreen .record {
+    margin-top: 12px;
+  }
+}
