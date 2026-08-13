@@ -1,0 +1,129 @@
+name: Atualizar linguagem para missão
+
+on:
+  push:
+    paths:
+      - '.github/workflows/mission-copy-update.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-copy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Substituir linguagem de jogo por missão
+        shell: python
+        run: |
+          from pathlib import Path
+
+          replacements = {
+            'index.html': [
+              ('DIGITSPEED | Aprenda a digitar rápido jogando', 'DIGITSPEED | Aprenda a digitar rápido em missões'),
+              ('jogo de digitação', 'treino de digitação'),
+              ('em um jogo gratuito', 'em uma missão interativa gratuita'),
+              ('"applicationCategory":"GameApplication"', '"applicationCategory":"EducationalApplication"'),
+              ('Jogo gratuito para aprender a digitar mais rápido', 'Plataforma gratuita para aprender a digitar mais rápido'),
+              ('Área do jogo', 'Área da missão'),
+              ('Pausar jogo', 'Pausar missão'),
+              ('Dificuldade do jogo', 'Dificuldade da missão'),
+              ('Jogo pausado', 'Missão pausada'),
+              ('Fim de jogo', 'Fim da missão'),
+              ('JOGAR NOVAMENTE', 'NOVA MISSÃO'),
+            ],
+            'numpad.html': [
+              ('Área do jogo numérico', 'Área da missão numérica'),
+              ('Pausar jogo', 'Pausar missão'),
+              ('Dificuldade do jogo', 'Dificuldade da missão'),
+              ('Jogo pausado', 'Missão pausada'),
+              ('Fim de jogo', 'Fim da missão'),
+              ('JOGAR NOVAMENTE', 'NOVA MISSÃO'),
+            ],
+            'en.html': [
+              ('DIGITSPEED | Learn to Type Faster with a Typing Game', 'DIGITSPEED | Learn to Type Faster with Typing Missions'),
+              ('typing game', 'typing mission'),
+              ('Typing game', 'Typing mission'),
+              ('"applicationCategory":"GameApplication"', '"applicationCategory":"EducationalApplication"'),
+              ('Game difficulty', 'Mission difficulty'),
+              ('Pause game', 'Pause mission'),
+              ('Game paused', 'Mission paused'),
+              ('Game over', 'Mission ended'),
+              ('PLAY AGAIN', 'NEW MISSION'),
+            ],
+            'fr.html': [
+              ('DIGITSPEED | Apprenez à taper plus vite en jouant', 'DIGITSPEED | Apprenez à taper plus vite avec des missions'),
+              ('jeu de dactylographie', 'mission de dactylographie'),
+              ('Jeu gratuit de dactylographie', 'Mission interactive de dactylographie'),
+              ('Un jeu gratuit', 'Une mission interactive gratuite'),
+              ('"applicationCategory":"GameApplication"', '"applicationCategory":"EducationalApplication"'),
+              ('Zone du jeu de dactylographie', 'Zone de la mission de dactylographie'),
+              ('Mettre le jeu en pause', 'Mettre la mission en pause'),
+              ('Difficulté du jeu', 'Difficulté de la mission'),
+              ('Jeu en pause', 'Mission en pause'),
+              ('Fin de partie', 'Fin de la mission'),
+              ('REJOUER', 'NOUVELLE MISSION'),
+            ],
+            'es.html': [
+              ('DIGITSPEED | Aprende a escribir más rápido jugando', 'DIGITSPEED | Aprende a escribir más rápido con misiones'),
+              ('juego de mecanografía', 'misión de mecanografía'),
+              ('typing game', 'typing training'),
+              ('Juego gratuito de mecanografía', 'Misión interactiva de mecanografía'),
+              ('Un juego gratuito', 'Una misión interactiva gratuita'),
+              ('"applicationCategory":"GameApplication"', '"applicationCategory":"EducationalApplication"'),
+              ('Área del juego de mecanografía', 'Área de la misión de mecanografía'),
+              ('Pausar juego', 'Pausar misión'),
+              ('Dificultad del juego', 'Dificultad de la misión'),
+              ('Juego pausado', 'Misión pausada'),
+              ('Fin del juego', 'Fin de la misión'),
+              ('JUGAR DE NUEVO', 'NUEVA MISIÓN'),
+            ],
+            'i18n.js': [
+              ('"Jogo pausado":"Game paused"', '"Missão pausada":"Mission paused"'),
+              ('"Fim de jogo":"Game over"', '"Fim da missão":"Mission ended"'),
+              ('"JOGAR NOVAMENTE":"PLAY AGAIN"', '"NOVA MISSÃO":"NEW MISSION"'),
+              ('"Jogo pausado":"Jeu en pause"', '"Missão pausada":"Mission en pause"'),
+              ('"Fim de jogo":"Fin de partie"', '"Fim da missão":"Fin de la mission"'),
+              ('"JOGAR NOVAMENTE":"REJOUER"', '"NOVA MISSÃO":"NOUVELLE MISSION"'),
+              ('"Jogo pausado":"Juego pausado"', '"Missão pausada":"Misión pausada"'),
+              ('"Fim de jogo":"Fin del juego"', '"Fim da missão":"Fin de la misión"'),
+              ('"JOGAR NOVAMENTE":"JUGAR DE NUEVO"', '"NOVA MISSÃO":"NUEVA MISIÓN"'),
+            ],
+            'README.md': [
+              ('Jogo brasileiro de digitação espacial', 'Plataforma interativa de treinamento de digitação'),
+              ('## Como jogar', '## Como treinar'),
+              ('**DIGITSPEED** — protótipo inicial', '**DIGITSPEED** — plataforma de treinamento'),
+            ],
+          }
+
+          for filename, pairs in replacements.items():
+              p = Path(filename)
+              if not p.exists():
+                  continue
+              text = p.read_text(encoding='utf-8')
+              for old, new in pairs:
+                  text = text.replace(old, new)
+              p.write_text(text, encoding='utf-8')
+
+      - name: Validar arquivos
+        run: |
+          node --check i18n.js
+          grep -q 'Missão pausada' index.html
+          grep -q 'Fim da missão' index.html
+          grep -q 'NOVA MISSÃO' index.html
+          grep -q 'Mission paused' en.html
+          grep -q 'Mission en pause' fr.html
+          grep -q 'Misión pausada' es.html
+          grep -q 'EducationalApplication' index.html
+          grep -q 'EducationalApplication' en.html
+          grep -q 'EducationalApplication' fr.html
+          grep -q 'EducationalApplication' es.html
+
+      - name: Publicar alterações
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html numpad.html en.html fr.html es.html i18n.js README.md
+          git commit -m "Substitui linguagem de jogo por missão" || exit 0
+          git push
